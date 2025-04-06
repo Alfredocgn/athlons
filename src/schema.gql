@@ -1,0 +1,94 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type AccessTokenResponse {
+  accessToken: String!
+}
+
+type AuthResponse {
+  accessToken: String!
+  refreshToken: String!
+  user: User!
+}
+
+input CreateUserInput {
+  bio: String
+  birthDate: DateTime
+  firstName: String!
+  gender: Gender
+  lastName: String!
+  pace: Pace
+  profileImg: String
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+enum Gender {
+  FEMALE
+  MALE
+  OTHER
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+type Mutation {
+  createUser(createUserInput: CreateUserInput!): User!
+  forgotPassword(email: String!): Boolean!
+  login(input: LoginInput!): AuthResponse!
+  logout(refreshToken: String!): Boolean!
+  refreshToken(refreshToken: String!): AccessTokenResponse!
+  register(input: RegisterInput!): AuthResponse!
+  removeUser(id: ID!): User!
+  updateUser(updateUserInput: UpdateUserInput!): User!
+}
+
+enum Pace {
+  ADVANCED
+  BEGINNER
+  ELITE
+  INTERMEDIATE
+}
+
+type Query {
+  me: User!
+  user(id: ID!): User!
+  users: [User!]!
+}
+
+input RegisterInput {
+  email: String!
+  firstName: String!
+  lastName: String!
+  password: String!
+}
+
+input UpdateUserInput {
+  bio: String
+  birthDate: DateTime
+  firstName: String
+  gender: Gender
+  id: ID!
+  lastName: String
+  pace: Pace
+  profileImg: String
+}
+
+type User {
+  bio: String
+  createdAt: DateTime!
+  email: String!
+  firstName: String!
+  gender: Gender
+  id: ID!
+  lastName: String!
+  pace: Pace
+  profileImg: String
+  updatedAt: DateTime!
+}
