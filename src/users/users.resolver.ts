@@ -4,7 +4,9 @@ import { User } from './entities/user.entity';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { GqlAuthGuard } from 'src/auth/guards/gql-auth.guard';
-import { UseGuards } from '@nestjs/common';
+import { UnauthorizedException, UseGuards } from '@nestjs/common';
+import { UpdateProfileInput } from './dto/update-profile.input';
+import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 
 @Resolver(() => User)
 export class UsersResolver {
@@ -34,7 +36,29 @@ export class UsersResolver {
   }
 
   @Mutation(() => User)
+  @UseGuards(GqlAuthGuard)
   removeUser(@Args('id', { type: () => ID }) id: string) {
     return this.usersService.remove(id);
+  }
+
+  @Mutation(() => User)
+  @UseGuards(GqlAuthGuard)
+  updateProfile(
+    @CurrentUser() currentUser: User,
+    @Args('updateProfileInput') updateProfileInput: UpdateProfileInput,
+  ) {
+    if (currentUser.id !== updateProfileInput.id) {
+      throw new UnauthorizedException('You can only update your own profile');
+    }
+    return this.usersService.updateProfile(
+      updateProfileInput.id,
+      updateProfileInput,
+    );
+  }
+
+  @Query(() => User, { name: 'myProfile' })
+  @UseGuards(GqlAuthGuard)
+  getMyProfile(@CurrentUser() user: User) {
+    return this.usersService.findOne(user.id);
   }
 }

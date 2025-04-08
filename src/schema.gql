@@ -12,14 +12,44 @@ type AuthResponse {
   user: User!
 }
 
+input CreateTrackPointInput {
+  elevation: Float
+  heartRate: Int
+  latitude: Float!
+  longitude: Float!
+  timestamp: DateTime!
+}
+
 input CreateUserInput {
   bio: String
   birthDate: DateTime
+  enableEmailNotifications: Boolean = true
+  enablePushNotifications: Boolean = true
   firstName: String!
   gender: Gender
+  height: Float
   lastName: String!
   pace: Pace
+  preferredDistance: Float
   profileImg: String
+  socialLinks: JSON
+  weeklyGoal: Float
+  weight: Float
+}
+
+input CreateWorkoutSessionInput {
+  avgPace: Float
+  caloriesBurned: Int
+  date: DateTime!
+  distance: Float!
+  duration: Int!
+  externalId: String
+  importedFrom: DeviceType!
+  notes: String
+  routeData: String
+  title: String!
+  trackPoints: [CreateTrackPointInput!]
+  workoutType: WorkoutType!
 }
 
 """
@@ -27,11 +57,28 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+enum DeviceType {
+  APPLE_HEALTH
+  COROS
+  FITBIT
+  GARMIN
+  GOOGLE_FIT
+  OTHER
+  POLAR
+  STRAVA
+  SUUNTO
+}
+
 enum Gender {
   FEMALE
   MALE
   OTHER
 }
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
 
 input LoginInput {
   email: String!
@@ -40,13 +87,17 @@ input LoginInput {
 
 type Mutation {
   createUser(createUserInput: CreateUserInput!): User!
+  createWorkoutSession(createWorkoutSessionInput: CreateWorkoutSessionInput!): WorkoutSession!
   forgotPassword(email: String!): Boolean!
   login(input: LoginInput!): AuthResponse!
   logout(refreshToken: String!): Boolean!
   refreshToken(refreshToken: String!): AccessTokenResponse!
   register(input: RegisterInput!): AuthResponse!
   removeUser(id: ID!): User!
+  removeWorkoutSession(id: Int!): WorkoutSession!
+  updateProfile(updateProfileInput: UpdateProfileInput!): User!
   updateUser(updateUserInput: UpdateUserInput!): User!
+  updateWorkoutSession(updateWorkoutSessionInput: UpdateWorkoutSessionInput!): WorkoutSession!
 }
 
 enum Pace {
@@ -58,8 +109,11 @@ enum Pace {
 
 type Query {
   me: User!
+  myProfile: User!
   user(id: ID!): User!
   users: [User!]!
+  workoutSession(id: Int!): WorkoutSession!
+  workoutSessions: [WorkoutSession!]!
 }
 
 input RegisterInput {
@@ -69,26 +123,109 @@ input RegisterInput {
   password: String!
 }
 
+type TrackPoint {
+  elevation: Float
+  heartRate: Int
+  id: ID!
+  latitude: Float!
+  longitude: Float!
+  timestamp: DateTime!
+  workoutSession: WorkoutSession!
+  workoutSessionId: String!
+}
+
+input UpdateProfileInput {
+  bio: String
+  enableEmailNotifications: Boolean
+  enablePushNotifications: Boolean
+  height: Float
+  id: ID!
+  preferredDistance: Float
+  socialLinks: JSON
+  weeklyGoal: Float
+  weight: Float
+}
+
 input UpdateUserInput {
   bio: String
   birthDate: DateTime
+  enableEmailNotifications: Boolean = true
+  enablePushNotifications: Boolean = true
   firstName: String
   gender: Gender
+  height: Float
   id: ID!
   lastName: String
   pace: Pace
+  preferredDistance: Float
   profileImg: String
+  socialLinks: JSON
+  weeklyGoal: Float
+  weight: Float
+}
+
+input UpdateWorkoutSessionInput {
+  avgPace: Float
+  caloriesBurned: Int
+  date: DateTime
+  distance: Float
+  duration: Int
+  externalId: String
+  id: Int!
+  importedFrom: DeviceType
+  notes: String
+  routeData: String
+  title: String
+  trackPoints: [CreateTrackPointInput!]
+  workoutType: WorkoutType
 }
 
 type User {
   bio: String
   createdAt: DateTime!
   email: String!
+  enableEmailNotifications: Boolean!
+  enablePushNotifications: Boolean!
   firstName: String!
   gender: Gender
+  height: Float
   id: ID!
   lastName: String!
   pace: Pace
+  preferredDistance: Float
   profileImg: String
+  socialLinks: JSON
   updatedAt: DateTime!
+  weeklyGoal: Float
+  weight: Float
+}
+
+type WorkoutSession {
+  avgPace: Float
+  caloriesBurned: Int
+  createdAt: DateTime!
+  date: DateTime!
+  distance: Float!
+  duration: Int!
+  externalId: String
+  id: ID!
+  importedFrom: DeviceType
+  notes: String
+  routeData: String
+  title: String!
+  trackPoints: [TrackPoint!]
+  updatedAt: DateTime!
+  user: User!
+  userId: String!
+  workoutType: WorkoutType!
+}
+
+enum WorkoutType {
+  INTERVAL
+  LONG_RUN
+  RACE
+  RECOVERY
+  RUN
+  TEMPO
+  TRAIL
 }

@@ -76,6 +76,13 @@ model User {
   pace                Pace?
   bio                 String?
   profileImg          String?
+  height              Float?
+  weight              Float?
+  preferredDistance   Float?
+  weeklyGoal          Float?
+  socialLinks         Json?
+  enableEmailNotifications    Boolean @default(true)
+  enablePushNotifications     Boolean @default(true)
   authUser            AuthUser    @relation(fields:[id],references:[id])
   createdRuns         Run[]
   createdClubs        Club[]       
