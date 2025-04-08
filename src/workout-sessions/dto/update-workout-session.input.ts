@@ -1,8 +1,13 @@
+import { IsNotEmpty, IsString } from 'class-validator';
 import { CreateWorkoutSessionInput } from './create-workout-session.input';
-import { InputType, Field, Int, PartialType } from '@nestjs/graphql';
+import { InputType, Field, PartialType, ID } from '@nestjs/graphql';
 
 @InputType()
-export class UpdateWorkoutSessionInput extends PartialType(CreateWorkoutSessionInput) {
-  @Field(() => Int)
-  id: number;
+export class UpdateWorkoutSessionInput extends PartialType(
+  CreateWorkoutSessionInput,
+) {
+  @Field(() => ID)
+  @IsString()
+  @IsNotEmpty()
+  id: string;
 }

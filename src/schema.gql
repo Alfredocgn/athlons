@@ -94,7 +94,7 @@ type Mutation {
   refreshToken(refreshToken: String!): AccessTokenResponse!
   register(input: RegisterInput!): AuthResponse!
   removeUser(id: ID!): User!
-  removeWorkoutSession(id: Int!): WorkoutSession!
+  removeWorkoutSession(id: ID!): WorkoutSession!
   updateProfile(updateProfileInput: UpdateProfileInput!): User!
   updateUser(updateUserInput: UpdateUserInput!): User!
   updateWorkoutSession(updateWorkoutSessionInput: UpdateWorkoutSessionInput!): WorkoutSession!
@@ -108,12 +108,13 @@ enum Pace {
 }
 
 type Query {
+  getWorkoutStats(endDate: DateTime!, startDate: DateTime!): WorkoutSessionStats!
   me: User!
   myProfile: User!
   user(id: ID!): User!
   users: [User!]!
-  workoutSession(id: Int!): WorkoutSession!
-  workoutSessions: [WorkoutSession!]!
+  workoutSession(id: ID!): WorkoutSession!
+  workoutSessions(filters: WorkoutSessionFilters): [WorkoutSession!]!
 }
 
 input RegisterInput {
@@ -171,7 +172,7 @@ input UpdateWorkoutSessionInput {
   distance: Float
   duration: Int
   externalId: String
-  id: Int!
+  id: ID!
   importedFrom: DeviceType
   notes: String
   routeData: String
@@ -218,6 +219,20 @@ type WorkoutSession {
   user: User!
   userId: String!
   workoutType: WorkoutType!
+}
+
+input WorkoutSessionFilters {
+  endDate: DateTime
+  startDate: DateTime
+  workoutType: WorkoutType
+}
+
+type WorkoutSessionStats {
+  avgPace: Float!
+  totalDistance: Float!
+  totalDuration: Int!
+  weeklyGoalProgress: Float
+  workoutCount: Int!
 }
 
 enum WorkoutType {
