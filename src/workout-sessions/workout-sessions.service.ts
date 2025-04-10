@@ -184,24 +184,22 @@ export class WorkoutSessionsService {
         where: { id },
       });
     } catch (error) {
-      console.error('Error detallado:', error);
+      console.error('Error :', error);
 
       if (error instanceof NotFoundException) {
         throw error;
       }
 
       if (error.code === 'P2025') {
-        throw new NotFoundException(`Sesión con ID ${id} no encontrada`);
+        throw new NotFoundException(`Session with ${id} not found`);
       }
 
       if (error.code === 'P2003') {
-        throw new BadRequestException(
-          'No se puede eliminar la sesión porque está siendo referenciada por otros registros',
-        );
+        throw new BadRequestException('Cannot delete session ');
       }
 
       throw new InternalServerErrorException(
-        `Error eliminando la sesión: ${error.message}`,
+        `Error deleting session: ${error.message}`,
       );
     }
   }
