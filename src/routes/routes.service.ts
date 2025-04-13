@@ -1,9 +1,7 @@
 import {
   BadRequestException,
-  ConflictException,
   ForbiddenException,
   Injectable,
-  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { CreateRouteInput } from './dto/create-route.input';
@@ -16,6 +14,7 @@ import {
 } from './helpers/geo-validation.helper';
 import { RouteDataFilters } from './dto/route-filters.dto';
 import { filterRoutesByProximity } from './helpers/geo-validation.helper';
+import { ErrorHandler } from 'src/common/utils/error-handler.util';
 
 @Injectable()
 export class RoutesService {
@@ -31,7 +30,10 @@ export class RoutesService {
       }
 
       if (!isValidRouteGeoJSON(createRouteInput.routeData)) {
-        throw new BadRequestException('Invalid GeoJSON format for routeData');
+        ErrorHandler.handleValidationError(
+          null,
+          'Invalid GeoJson format for routeData',
+        );
       }
 
       if (!createRouteInput.distance) {
@@ -51,20 +53,7 @@ export class RoutesService {
       });
       return route;
     } catch (error) {
-      if (error instanceof BadRequestException) {
-        throw error;
-      }
-      if (error.code === 'P2002') {
-        throw new ConflictException('A route with this name already exists');
-      }
-      if (error.code === 'P2003') {
-        throw new BadRequestException('Referenced user does not exists');
-      }
-      console.error('Error creating route:', error);
-
-      throw new InternalServerErrorException(
-        'Failed to create route. Please try again later.',
-      );
+      ErrorHandler.handlerError(error, 'route', 'create');
     }
   }
 
@@ -139,8 +128,7 @@ export class RoutesService {
       }
       return routes;
     } catch (error) {
-      console.error('Error fetching routes:', error);
-      throw new InternalServerErrorException('Failed to fetch routes');
+      ErrorHandler.handlerError(error, 'route', 'find');
     }
   }
 
@@ -166,7 +154,7 @@ export class RoutesService {
         throw error;
       }
       console.error(`Error fetching route with ID ${id}:`, error);
-      throw new InternalServerErrorException('Failed to fetch route details');
+      ErrorHandler.handlerError(error, 'route', 'find');
     }
   }
 
@@ -174,11 +162,12 @@ export class RoutesService {
     try {
       const existingRoute = await this.findOne(id);
 
-      if (existingRoute.creatorId !== userId) {
-        throw new ForbiddenException(
-          'You can only update routes that you created',
-        );
-      }
+      ErrorHandler.checkPermission(
+        existingRoute.creatorId,
+        userId,
+        'route',
+        'update',
+      );
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { id: routeId, ...updateData } = updateRouteInput;
 
@@ -201,21 +190,7 @@ export class RoutesService {
 
       return updatedRoute;
     } catch (error) {
-      if (
-        error instanceof NotFoundException ||
-        error instanceof ForbiddenException ||
-        error instanceof BadRequestException
-      ) {
-        throw error;
-      }
-      if (error.code === 'P2025') {
-        throw new NotFoundException(`Route with ID ${id} not found`);
-      }
-      if (error.code === 'P2002') {
-        throw new ConflictException('A route with this name already exists');
-      }
-      console.error(`Error updating route with ID ${id}:`, error);
-      throw new InternalServerErrorException('Failed to update route');
+      ErrorHandler.handlerError(error, 'route', 'update', id);
     }
   }
 
@@ -223,30 +198,17 @@ export class RoutesService {
     try {
       const existingRoute = await this.findOne(id);
 
-      if (existingRoute.creatorId !== userId) {
-        throw new ForbiddenException(
-          'You can only delete routes that you created',
-        );
-      }
+      ErrorHandler.checkPermission(
+        existingRoute.creatorId,
+        userId,
+        'route',
+        'delete',
+      );
       return await this.prisma.route.delete({
         where: { id },
       });
     } catch (error) {
-      console.error('Error:', error);
-
-      if (error instanceof NotFoundException) {
-        throw error;
-      }
-      if (error.code === 'P2025') {
-        throw new NotFoundException(`Route with id ${id} not found`);
-      }
-
-      if (error.code === 'P2023') {
-        throw new BadRequestException('Cannot delete route');
-      }
-      throw new InternalServerErrorException(
-        `Error deleting route: ${error.message}`,
-      );
+      ErrorHandler.handlerError(error, 'route', 'delete', id);
     }
   }
 }

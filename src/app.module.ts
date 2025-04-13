@@ -4,12 +4,14 @@ import { JoiValidationSchema } from './config/joi.validation';
 import { PrismaModule } from './prisma/prisma.module';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+// import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import { join } from 'path';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { EmailModule } from './email/email.module';
 import { WorkoutSessionsModule } from './workout-sessions/workout-sessions.module';
 import { RoutesModule } from './routes/routes.module';
+import { RunsModule } from './runs/runs.module';
 
 @Module({
   imports: [
@@ -17,13 +19,8 @@ import { RoutesModule } from './routes/routes.module';
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
-      playground: {
-        settings: {
-          'request.credentials': 'include',
-          'editor.theme': 'dark',
-          'editor.reuseHeaders': true,
-        },
-      },
+      playground: true,
+      // plugins: [ApolloServerPluginLandingPageLocalDefault()],
       introspection: true,
     }),
     ConfigModule.forRoot({
@@ -36,6 +33,7 @@ import { RoutesModule } from './routes/routes.module';
     EmailModule,
     WorkoutSessionsModule,
     RoutesModule,
+    RunsModule,
   ],
 })
 export class AppModule {}

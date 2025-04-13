@@ -12,6 +12,28 @@ type AuthResponse {
   user: User!
 }
 
+input CreateRouteInput {
+  description: String!
+  distance: Float!
+  elevation: Float
+  name: String!
+  routeData: String!
+}
+
+input CreateRunInput {
+  clubId: String
+  date: String!
+  description: String
+  distance: Float
+  eventImage: String
+  latitude: Float
+  location: String!
+  longitude: Float
+  pace: Pace
+  routeData: String
+  title: String!
+}
+
 input CreateTrackPointInput {
   elevation: Float
   heartRate: Int
@@ -86,6 +108,9 @@ input LoginInput {
 }
 
 type Mutation {
+  cancelRegistration(id: String!): Run!
+  createRoute(createRouteInput: CreateRouteInput!): Route!
+  createRun(createRunInput: CreateRunInput!): Run!
   createUser(createUserInput: CreateUserInput!): User!
   createWorkoutSession(createWorkoutSessionInput: CreateWorkoutSessionInput!): WorkoutSession!
   forgotPassword(email: String!): Boolean!
@@ -93,9 +118,14 @@ type Mutation {
   logout(refreshToken: String!): Boolean!
   refreshToken(refreshToken: String!): AccessTokenResponse!
   register(input: RegisterInput!): AuthResponse!
+  registerForRun(id: String!): Run!
+  removeRoute(id: ID!): Route!
+  removeRun(id: String!): Run!
   removeUser(id: ID!): User!
   removeWorkoutSession(id: ID!): WorkoutSession!
   updateProfile(updateProfileInput: UpdateProfileInput!): User!
+  updateRoute(updateRouteInput: UpdateRouteInput!): Route!
+  updateRun(updateRunInput: UpdateRunInput!): Run!
   updateUser(updateUserInput: UpdateUserInput!): User!
   updateWorkoutSession(updateWorkoutSessionInput: UpdateWorkoutSessionInput!): WorkoutSession!
 }
@@ -111,6 +141,12 @@ type Query {
   getWorkoutStats(endDate: DateTime!, startDate: DateTime!): WorkoutSessionStats!
   me: User!
   myProfile: User!
+  myRuns: [Run!]!
+  route(id: ID!): Route!
+  routes(filters: RouteDataFilters): [Route!]!
+  run(id: String!): Run!
+  runs(filters: RunFilters): [Run!]!
+  upcomingRuns: [Run!]!
   user(id: ID!): User!
   users: [User!]!
   workoutSession(id: ID!): WorkoutSession!
@@ -122,6 +158,76 @@ input RegisterInput {
   firstName: String!
   lastName: String!
   password: String!
+}
+
+type Route {
+  createdAt: DateTime!
+  creator: User!
+  creatorId: String!
+  description: String!
+  distance: Float!
+  elevation: Float
+  id: ID!
+  name: String!
+  routeData: String!
+  routeDataJson: JSON
+  updatedAt: DateTime!
+}
+
+input RouteDataFilters {
+  createdAfter: DateTime
+  createdBefore: DateTime
+  creatorId: String
+  limit: Int
+  maxDistance: Float
+  maxElevation: Float
+  minDistance: Float
+  minElevation: Float
+  nearLatitude: Float
+  nearLongitude: Float
+  offset: Int
+  radiusKm: Float
+}
+
+type Run {
+  clubdId: String
+  createdAt: DateTime!
+  creator: User!
+  creatorId: String!
+  date: DateTime!
+  description: String
+  distance: Float
+  eventImage: String
+  id: ID!
+  latitude: Float
+  location: String!
+  longitude: Float
+  pace: Pace
+  participantCount: Int!
+  participants: [RunnerOnRun!]
+  routeData: String
+  title: String!
+  updatedAt: DateTime!
+}
+
+input RunFilters {
+  clubId: String
+  creatorId: String
+  fromDate: String
+  location: String
+  maxDistance: Float
+  minDistance: Float
+  pace: Pace
+  search: String
+  toDate: String
+}
+
+type RunnerOnRun {
+  id: ID!
+  run: Run!
+  runId: String!
+  user: User!
+  userId: String!
 }
 
 type TrackPoint {
@@ -145,6 +251,30 @@ input UpdateProfileInput {
   socialLinks: JSON
   weeklyGoal: Float
   weight: Float
+}
+
+input UpdateRouteInput {
+  description: String
+  distance: Float
+  elevation: Float
+  id: ID!
+  name: String
+  routeData: String
+}
+
+input UpdateRunInput {
+  clubId: String
+  date: String
+  description: String
+  distance: Float
+  eventImage: String
+  id: ID!
+  latitude: Float
+  location: String
+  longitude: Float
+  pace: Pace
+  routeData: String
+  title: String
 }
 
 input UpdateUserInput {
@@ -184,7 +314,7 @@ input UpdateWorkoutSessionInput {
 type User {
   bio: String
   createdAt: DateTime!
-  email: String!
+  email: String
   enableEmailNotifications: Boolean!
   enablePushNotifications: Boolean!
   firstName: String!

@@ -1,10 +1,6 @@
 import { registerEnumType } from '@nestjs/graphql';
+import { Pace } from '@prisma/client';
 
-export enum Pace {
-  BEGINNER = 'BEGINNER',
-  INTERMEDIATE = 'INTERMEDIATE',
-  ADVANCED = 'ADVANCED',
-  ELITE = 'ELITE',
-}
+export { Pace };
 
 registerEnumType(Pace, { name: 'Pace' });

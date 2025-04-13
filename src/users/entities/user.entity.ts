@@ -13,8 +13,8 @@ export class User {
   @Field()
   lastName: string;
 
-  @Field()
-  email: string;
+  @Field(() => String, { nullable: true })
+  email?: string;
 
   @Field(() => Float, { nullable: true })
   height?: number;

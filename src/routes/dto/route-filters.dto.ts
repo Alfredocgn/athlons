@@ -37,13 +37,15 @@ export class RouteDataFilters {
   @Field(() => Float, { nullable: true })
   @IsOptional()
   @IsNumber()
-  @Min(0)
+  @Min(-90)
+  @Max(+90)
   nearLatitude?: number;
 
   @Field(() => Float, { nullable: true })
   @IsOptional()
   @IsNumber()
-  @Min(0)
+  @Min(-180)
+  @Max(+180)
   nearLongitude?: number;
 
   @Field(() => Float, { nullable: true })

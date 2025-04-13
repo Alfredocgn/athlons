@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  ConflictException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -11,6 +10,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { UsersService } from 'src/users/users.service';
 import { Prisma } from '@prisma/client';
 import { WorkoutSessionFilters } from './dto/workout-session-filters.dto';
+import { ErrorHandler } from 'src/common/utils/error-handler.util';
 
 @Injectable()
 export class WorkoutSessionsService {
@@ -53,13 +53,7 @@ export class WorkoutSessionsService {
         });
       });
     } catch (error) {
-      if (error.code === 'P2002') {
-        throw new ConflictException('A session with this data already exists');
-      }
-      if (error.code === 'P2025') {
-        throw new NotFoundException('User not found');
-      }
-      throw new InternalServerErrorException('Error creating workout session');
+      ErrorHandler.handlerError(error, 'workout-sessions', 'create');
     }
   }
 
@@ -92,10 +86,7 @@ export class WorkoutSessionsService {
         },
       });
     } catch (error) {
-      throw new InternalServerErrorException(
-        'Error al obtener las sesiones de entrenamiento',
-        error,
-      );
+      ErrorHandler.handlerError(error, 'workout-sessions', 'find');
     }
   }
 
@@ -118,10 +109,7 @@ export class WorkoutSessionsService {
       }
       return workout;
     } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw error;
-      }
-      throw new InternalServerErrorException('Error to obtain workout session');
+      ErrorHandler.handlerError(error, 'workout-sessions', 'find');
     }
   }
 
@@ -165,10 +153,7 @@ export class WorkoutSessionsService {
         });
       });
     } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw error;
-      }
-      throw new InternalServerErrorException('Error updating workout session');
+      ErrorHandler.handlerError(error, 'workout-sessions', 'find', id);
     }
   }
 
@@ -184,23 +169,7 @@ export class WorkoutSessionsService {
         where: { id },
       });
     } catch (error) {
-      console.error('Error :', error);
-
-      if (error instanceof NotFoundException) {
-        throw error;
-      }
-
-      if (error.code === 'P2025') {
-        throw new NotFoundException(`Session with ${id} not found`);
-      }
-
-      if (error.code === 'P2003') {
-        throw new BadRequestException('Cannot delete session ');
-      }
-
-      throw new InternalServerErrorException(
-        `Error deleting session: ${error.message}`,
-      );
+      ErrorHandler.handlerError(error, 'workout-sessions', 'delete', id);
     }
   }
 

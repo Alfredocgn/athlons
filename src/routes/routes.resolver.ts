@@ -1,35 +1,79 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  ID,
+  ResolveField,
+  Parent,
+} from '@nestjs/graphql';
 import { RoutesService } from './routes.service';
 import { Route } from './entities/route.entity';
 import { CreateRouteInput } from './dto/create-route.input';
 import { UpdateRouteInput } from './dto/update-route.input';
+import { UseGuards } from '@nestjs/common';
+import { GqlAuthGuard } from 'src/auth/guards/gql-auth.guard';
+import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
+import { User } from 'src/users/entities/user.entity';
+import { RouteDataFilters } from './dto/route-filters.dto';
+import GraphQLJSON from 'graphql-type-json';
 
 @Resolver(() => Route)
 export class RoutesResolver {
   constructor(private readonly routesService: RoutesService) {}
 
   @Mutation(() => Route)
-  createRoute(@Args('createRouteInput') createRouteInput: CreateRouteInput) {
-    return this.routesService.create(createRouteInput);
+  @UseGuards(GqlAuthGuard)
+  createRoute(
+    @CurrentUser() currentUser: User,
+    @Args('createRouteInput') createRouteInput: CreateRouteInput,
+  ) {
+    return this.routesService.create(createRouteInput, currentUser.id);
   }
 
   @Query(() => [Route], { name: 'routes' })
-  findAll() {
-    return this.routesService.findAll();
+  @UseGuards(GqlAuthGuard)
+  findAll(
+    @CurrentUser() currentUser: User,
+    @Args('filters', { nullable: true }) filters?: RouteDataFilters,
+  ) {
+    return this.routesService.findAll(currentUser.id, filters);
   }
 
   @Query(() => Route, { name: 'route' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
+  @UseGuards(GqlAuthGuard)
+  findOne(@Args('id', { type: () => ID }) id: string) {
     return this.routesService.findOne(id);
   }
 
   @Mutation(() => Route)
-  updateRoute(@Args('updateRouteInput') updateRouteInput: UpdateRouteInput) {
-    return this.routesService.update(updateRouteInput.id, updateRouteInput);
+  @UseGuards(GqlAuthGuard)
+  updateRoute(
+    @CurrentUser() currentUser: User,
+    @Args('updateRouteInput') updateRouteInput: UpdateRouteInput,
+  ) {
+    return this.routesService.update(
+      updateRouteInput.id,
+      updateRouteInput,
+      currentUser.id,
+    );
   }
 
   @Mutation(() => Route)
-  removeRoute(@Args('id', { type: () => Int }) id: number) {
-    return this.routesService.remove(id);
+  @UseGuards(GqlAuthGuard)
+  removeRoute(
+    @CurrentUser() currentUser: User,
+    @Args('id', { type: () => ID }) id: string,
+  ) {
+    return this.routesService.remove(id, currentUser.id);
+  }
+
+  @ResolveField('routeDataJson', () => GraphQLJSON, { nullable: true })
+  getRouteDataJson(@Parent() route: Route) {
+    try {
+      return route.routeData ? JSON.parse(route.routeData) : null;
+    } catch {
+      return null;
+    }
   }
 }
