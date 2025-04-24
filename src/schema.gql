@@ -31,6 +31,7 @@ input CreateRunInput {
   longitude: Float
   pace: Pace
   routeData: String
+  routeId: String
   title: String!
 }
 
@@ -69,6 +70,7 @@ input CreateWorkoutSessionInput {
   importedFrom: DeviceType!
   notes: String
   routeData: String
+  runId: String
   title: String!
   trackPoints: [CreateTrackPointInput!]
   workoutType: WorkoutType!
@@ -108,6 +110,7 @@ input LoginInput {
 }
 
 type Mutation {
+  assignToRun(runId: String!, workoutSessionId: String!): WorkoutSession!
   cancelRegistration(id: String!): Run!
   createRoute(createRouteInput: CreateRouteInput!): Route!
   createRun(createRunInput: CreateRunInput!): Run!
@@ -146,6 +149,7 @@ type Query {
   routes(filters: RouteDataFilters): [Route!]!
   run(id: String!): Run!
   runs(filters: RunFilters): [Run!]!
+  sessionsByRun(runId: String!): [WorkoutSession!]!
   upcomingRuns: [Run!]!
   user(id: ID!): User!
   users: [User!]!
@@ -171,6 +175,7 @@ type Route {
   name: String!
   routeData: String!
   routeDataJson: JSON
+  runs: [Run!]
   updatedAt: DateTime!
 }
 
@@ -205,9 +210,12 @@ type Run {
   pace: Pace
   participantCount: Int!
   participants: [RunnerOnRun!]
+  route: Route
   routeData: String
+  routeId: String
   title: String!
   updatedAt: DateTime!
+  workoutSessions: [WorkoutSession!]
 }
 
 input RunFilters {
@@ -274,6 +282,7 @@ input UpdateRunInput {
   longitude: Float
   pace: Pace
   routeData: String
+  routeId: String
   title: String
 }
 
@@ -306,6 +315,7 @@ input UpdateWorkoutSessionInput {
   importedFrom: DeviceType
   notes: String
   routeData: String
+  runId: String
   title: String
   trackPoints: [CreateTrackPointInput!]
   workoutType: WorkoutType
@@ -343,6 +353,8 @@ type WorkoutSession {
   importedFrom: DeviceType
   notes: String
   routeData: String
+  run: Run
+  runId: String
   title: String!
   trackPoints: [TrackPoint!]
   updatedAt: DateTime!

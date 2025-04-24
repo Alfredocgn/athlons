@@ -3,6 +3,7 @@ import { DeviceType, WorkoutType } from 'src/common/enums';
 
 import { User } from 'src/users/entities/user.entity';
 import { TrackPoint } from './track-point.entity';
+import { Run } from 'src/runs/entities/run.entity';
 
 @ObjectType()
 export class WorkoutSession {
@@ -50,6 +51,12 @@ export class WorkoutSession {
 
   @Field(() => [TrackPoint], { nullable: true })
   trackPoints?: TrackPoint[];
+
+  @Field(() => String, { nullable: true })
+  runId?: string;
+
+  @Field(() => Run, { nullable: true })
+  run?: Run;
 
   @Field()
   createdAt: Date;

@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -214,6 +215,82 @@ export class WorkoutSessionsService {
       };
     } catch (error) {
       throw new InternalServerErrorException('Error getting stats', error);
+    }
+  }
+
+  async findByRunId(runId: string) {
+    try {
+      return await this.prisma.workoutSession.findMany({
+        where: { runId },
+        include: {
+          user: true,
+          trackPoints: true,
+        },
+      });
+    } catch (error) {
+      return ErrorHandler.handlerError(error, 'workoutSessions', 'find');
+    }
+  }
+
+  async assignToRun(workoutSessionId: string, runId: string, userId: string) {
+    try {
+      // Verificar que la sesión pertenece al usuario
+      const workoutSession = await this.prisma.workoutSession.findUnique({
+        where: { id: workoutSessionId },
+        select: { userId: true },
+      });
+
+      if (!workoutSession) {
+        throw new NotFoundException(
+          `WorkoutSession with ID ${workoutSessionId} not found`,
+        );
+      }
+
+      if (workoutSession.userId !== userId) {
+        throw new ForbiddenException(
+          'You can only assign your own workout sessions to runs',
+        );
+      }
+
+      // Verificar que el evento existe
+      const run = await this.prisma.run.findUnique({
+        where: { id: runId },
+      });
+
+      if (!run) {
+        throw new NotFoundException(`Run with ID ${runId} not found`);
+      }
+
+      // Verificar que el usuario es participante del evento
+      const isParticipant = await this.prisma.runnerOnRun.findFirst({
+        where: {
+          runId,
+          userId,
+        },
+      });
+
+      if (!isParticipant && run.creatorId !== userId) {
+        throw new ForbiddenException(
+          'You can only assign workout sessions to runs you are participating in',
+        );
+      }
+
+      // Actualizar la sesión
+      return await this.prisma.workoutSession.update({
+        where: { id: workoutSessionId },
+        data: { runId },
+        include: {
+          user: true,
+          trackPoints: true,
+        },
+      });
+    } catch (error) {
+      return ErrorHandler.handlerError(
+        error,
+        'workoutSession',
+        'create',
+        userId,
+      );
     }
   }
 }

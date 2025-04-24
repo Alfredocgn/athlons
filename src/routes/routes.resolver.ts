@@ -6,6 +6,7 @@ import {
   ID,
   ResolveField,
   Parent,
+  Root,
 } from '@nestjs/graphql';
 import { RoutesService } from './routes.service';
 import { Route } from './entities/route.entity';
@@ -17,10 +18,15 @@ import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 import { User } from 'src/users/entities/user.entity';
 import { RouteDataFilters } from './dto/route-filters.dto';
 import GraphQLJSON from 'graphql-type-json';
+import { Run } from 'src/runs/entities/run.entity';
+import { RelationshipsService } from 'src/shared/relationships/relationships.service';
 
 @Resolver(() => Route)
 export class RoutesResolver {
-  constructor(private readonly routesService: RoutesService) {}
+  constructor(
+    private readonly routesService: RoutesService,
+    private readonly relationshipsService: RelationshipsService,
+  ) {}
 
   @Mutation(() => Route)
   @UseGuards(GqlAuthGuard)
@@ -75,5 +81,10 @@ export class RoutesResolver {
     } catch {
       return null;
     }
+  }
+
+  @ResolveField(() => [Run], { nullable: true })
+  async runs(@Root() route: Route) {
+    return this.relationshipsService.getRunsByRouteId(route.id);
   }
 }

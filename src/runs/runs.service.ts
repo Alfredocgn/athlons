@@ -324,4 +324,26 @@ export class RunsService {
       ErrorHandler.handlerError(error, 'runs', 'getUserRuns', userId);
     }
   }
+
+  async findByRouteId(routeId: string) {
+    try {
+      return await this.prisma.run.findMany({
+        where: { routeId },
+        include: {
+          creator: true,
+          participants: {
+            include: {
+              user: true,
+            },
+          },
+          club: true,
+        },
+        orderBy: {
+          date: 'asc',
+        },
+      });
+    } catch (error) {
+      return ErrorHandler.handlerError(error, 'runs', 'find');
+    }
+  }
 }

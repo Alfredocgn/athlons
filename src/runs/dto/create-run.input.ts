@@ -5,6 +5,7 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  IsUUID,
   Min,
 } from 'class-validator';
 import { Pace } from 'src/common/enums';
@@ -66,4 +67,9 @@ export class CreateRunInput {
   @IsOptional()
   @IsString()
   clubId?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  @IsUUID()
+  routeId?: string;
 }

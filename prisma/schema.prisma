@@ -112,6 +112,9 @@ model Run {
   creatorId     String
   creator       User        @relation(fields:[creatorId],references:[id])
   participants  RunnerOnRun[]
+  workoutSessions WorkoutSession[]
+  routeId       String?
+  route         Route?      @relation(fields:[routeId],references:[id])
   routeData     String?
   clubId        String?
   club          Club?       @relation(fields:[clubId],references: [id])
@@ -165,6 +168,7 @@ model Route{
   elevation     Float?
   creatorId     String
   creator       User      @relation(fields:[creatorId],references:[id])
+  runs          Run[]    
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
@@ -186,6 +190,8 @@ model WorkoutSession {
   trackPoints     TrackPoint[]
   importSource    ImportedWorkout?
   importedFrom    DeviceType?
+  runId           String?
+  run             Run? @relation(fields:[runId],references: [id])
   externalId      String?
   createdAt       DateTime   @default(now())
   updatedAt       DateTime   @updatedAt

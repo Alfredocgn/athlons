@@ -1,4 +1,12 @@
-import { Resolver, Query, Mutation, Args, ID } from '@nestjs/graphql';
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  ID,
+  Root,
+  ResolveField,
+} from '@nestjs/graphql';
 import { WorkoutSessionsService } from './workout-sessions.service';
 import { WorkoutSession } from './entities/workout-session.entity';
 import { CreateWorkoutSessionInput } from './dto/create-workout-session.input';
@@ -9,11 +17,14 @@ import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 import { User } from 'src/users/entities/user.entity';
 import { WorkoutSessionFilters } from './dto/workout-session-filters.dto';
 import { WorkoutSessionStats } from './entities/workout-session-stats.entity';
+import { Run } from 'src/runs/entities/run.entity';
+import { RelationshipsService } from 'src/shared/relationships/relationships.service';
 
 @Resolver(() => WorkoutSession)
 export class WorkoutSessionsResolver {
   constructor(
     private readonly workoutSessionsService: WorkoutSessionsService,
+    private readonly relationshipsService: RelationshipsService,
   ) {}
 
   @Mutation(() => WorkoutSession)
@@ -81,6 +92,41 @@ export class WorkoutSessionsResolver {
       currentUser.id,
       startDate,
       endDate,
+    );
+  }
+
+  @Query(() => [WorkoutSession], { name: 'sessionsByRun' })
+  @UseGuards(GqlAuthGuard)
+  async getSessionByRun(
+    @Args('runId', { type: () => String }) runId: string,
+    // @CurrentUser() currentUser: User,
+  ) {
+    return this.workoutSessionsService.findByRunId(runId);
+  }
+
+  @ResolveField(() => Run, { nullable: true })
+  async run(@Root() workoutSession: WorkoutSession) {
+    if (!workoutSession.runId) return null;
+    return this.relationshipsService.getRunForWorkoutSession(workoutSession.id);
+  }
+
+  @Query(() => [WorkoutSession], { name: 'sessionsByRun' })
+  @UseGuards(GqlAuthGuard)
+  findSessionsByRun(@Args('runId', { type: () => String }) runId: string) {
+    return this.workoutSessionsService.findByRunId(runId);
+  }
+
+  @Mutation(() => WorkoutSession)
+  @UseGuards(GqlAuthGuard)
+  assignToRun(
+    @CurrentUser() currentUser: User,
+    @Args('workoutSessionId', { type: () => String }) workoutSessionId: string,
+    @Args('runId', { type: () => String }) runId: string,
+  ) {
+    return this.workoutSessionsService.assignToRun(
+      workoutSessionId,
+      runId,
+      currentUser.id,
     );
   }
 }

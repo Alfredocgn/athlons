@@ -12,6 +12,7 @@ import { EmailModule } from './email/email.module';
 import { WorkoutSessionsModule } from './workout-sessions/workout-sessions.module';
 import { RoutesModule } from './routes/routes.module';
 import { RunsModule } from './runs/runs.module';
+import { SharedModule } from './shared/shared.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { RunsModule } from './runs/runs.module';
     WorkoutSessionsModule,
     RoutesModule,
     RunsModule,
+    SharedModule,
   ],
 })
 export class AppModule {}

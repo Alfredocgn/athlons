@@ -1,4 +1,5 @@
 import { ObjectType, Field, ID, Float } from '@nestjs/graphql';
+import { Run } from 'src/runs/entities/run.entity';
 import { User } from 'src/users/entities/user.entity';
 
 @ObjectType()
@@ -26,6 +27,9 @@ export class Route {
 
   @Field(() => User)
   creator: User;
+
+  @Field(() => [Run], { nullable: true })
+  runs?: Run[];
 
   @Field()
   createdAt: Date;

@@ -7,6 +7,7 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  IsUUID,
   ValidateNested,
 } from 'class-validator';
 import { DeviceType, WorkoutType } from 'src/common/enums';
@@ -69,9 +70,15 @@ export class CreateWorkoutSessionInput {
   @IsString()
   @IsOptional()
   externalId?: string;
+
   @Field(() => [CreateTrackPointInput], { nullable: true })
   @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => CreateTrackPointInput)
   trackPoints?: CreateTrackPointInput[];
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  @IsUUID()
+  runId?: string;
 }

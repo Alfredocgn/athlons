@@ -2,6 +2,8 @@ import { ObjectType, Field, ID, Float } from '@nestjs/graphql';
 import { User } from 'src/users/entities/user.entity';
 import { RunnerOnRun } from './runner-on-run.entity';
 import { Pace } from '../../common/enums/index';
+import { Route } from 'src/routes/entities/route.entity';
+import { WorkoutSession } from 'src/workout-sessions/entities/workout-session.entity';
 
 @ObjectType()
 export class Run {
@@ -43,6 +45,15 @@ export class Run {
 
   @Field(() => [RunnerOnRun], { nullable: true })
   participants?: RunnerOnRun[];
+
+  @Field(() => String, { nullable: true })
+  routeId?: string;
+
+  @Field(() => Route, { nullable: true })
+  route?: Route;
+
+  @Field(() => [WorkoutSession], { nullable: true })
+  workoutSessions?: WorkoutSession[];
 
   @Field(() => String, { nullable: true })
   routeData?: string;

@@ -16,10 +16,16 @@ import { UseGuards } from '@nestjs/common';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 import { User } from 'src/users/entities/user.entity';
 import { RunFilters } from './dto/run-filters.input';
+import { Route } from 'src/routes/entities/route.entity';
+import { RelationshipsService } from 'src/shared/relationships/relationships.service';
+import { WorkoutSession } from 'src/workout-sessions/entities/workout-session.entity';
 
 @Resolver(() => Run)
 export class RunsResolver {
-  constructor(private readonly runsService: RunsService) {}
+  constructor(
+    private readonly runsService: RunsService,
+    private readonly relationshipsService: RelationshipsService,
+  ) {}
 
   @Mutation(() => Run)
   @UseGuards(GqlAuthGuard)
@@ -94,5 +100,16 @@ export class RunsResolver {
   @ResolveField(() => Int)
   participantCount(@Root() run: Run): number {
     return run.participants?.length || 0;
+  }
+
+  @ResolveField(() => Route, { nullable: true })
+  async route(@Root() run: Run) {
+    if (!run.routeId) return null;
+    return this.relationshipsService.getRouteForRun(run.id);
+  }
+
+  @ResolveField(() => [WorkoutSession], { nullable: true })
+  async workoutSessions(@Root() run: Run) {
+    return this.relationshipsService.getWorkoutSessionsByRunId(run.id);
   }
 }
