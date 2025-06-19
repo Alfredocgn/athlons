@@ -35,7 +35,7 @@ const ActionButton = ({
     const baseStyle = [styles.text, styles[`${size}Text`]];
     switch (variant) {
       case "secondary":
-        return [...baseStyle, { color: theme.text }];
+        return [...baseStyle, { color: theme.tint }];
       default:
         return [...baseStyle, { color: theme.background }];
     }

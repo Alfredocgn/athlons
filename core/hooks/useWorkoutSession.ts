@@ -1,4 +1,5 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { mockWorkoutSessions } from "../data/mockData";
 import {
   DeviceType,
   TrackPoint,
@@ -11,6 +12,10 @@ export const useWorkoutSession = () => {
     null
   );
   const [sessions, setSessions] = useState<WorkoutSession[]>([]);
+
+  useEffect(() => {
+    setSessions(mockWorkoutSessions);
+  }, []);
 
   const startSession = useCallback(
     (title: string, workoutType: WorkoutType = WorkoutType.RUNNING) => {
@@ -31,7 +36,7 @@ export const useWorkoutSession = () => {
     []
   );
 
-  const updatedSession = useCallback((updates: Partial<WorkoutSession>) => {
+  const updateSession = useCallback((updates: Partial<WorkoutSession>) => {
     setCurrentSession((prev) => (prev ? { ...prev, ...updates } : null));
   }, []);
 
@@ -46,14 +51,13 @@ export const useWorkoutSession = () => {
   }, []);
 
   const pauseSession = useCallback(() => {
-    updatedSession({ status: "paused" });
-  }, [updatedSession]);
+    updateSession({ status: "paused" });
+  }, [updateSession]);
 
   const resumeSession = useCallback(() => {
-    updatedSession({ status: "active" });
-  }, [updatedSession]);
-
-  const stopSession = useCallback(
+    updateSession({ status: "active" });
+  }, [updateSession]);
+  const finishSession = useCallback(
     (finalStats: {
       distance: number;
       duration: number;
@@ -62,6 +66,7 @@ export const useWorkoutSession = () => {
       notes?: string;
     }) => {
       if (!currentSession) return null;
+
       const completedSession: WorkoutSession = {
         ...currentSession,
         date: new Date(),
@@ -72,12 +77,19 @@ export const useWorkoutSession = () => {
         notes: finalStats.notes,
         status: "completed",
       };
+
       setSessions((prev) => [completedSession, ...prev]);
+
       setCurrentSession(null);
+
       return completedSession;
     },
     [currentSession]
   );
+
+  const cancelSession = useCallback(() => {
+    setCurrentSession(null);
+  }, []);
 
   const loadSessions = () => {
     // TODO CONECTAR CON BACKEND PARA TRAER SESISONS
@@ -90,16 +102,17 @@ export const useWorkoutSession = () => {
     sessions,
 
     startSession,
-    updatedSession,
+    updateSession,
     addTrackPoints,
     pauseSession,
     resumeSession,
-    stopSession,
+    finishSession,
+    cancelSession,
     loadSessions,
     clearHistory,
 
     isActive: currentSession?.status === "active",
-    isPaused: currentSession?.status === "completed",
+    isPaused: currentSession?.status === "paused",
     hasActiveSession: currentSession !== null,
   };
 };

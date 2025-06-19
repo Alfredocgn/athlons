@@ -34,6 +34,12 @@ export default function TabLayout() {
             tabBarBadge: 2,
           }}
         />
+        <Tabs.Screen
+          name="training"
+          options={{
+            title: "Training",
+          }}
+        />
 
         <Tabs.Screen
           name="profile"

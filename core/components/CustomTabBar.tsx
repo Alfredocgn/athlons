@@ -9,6 +9,7 @@ const icons: Record<string, React.ComponentProps<typeof FontAwesome6>["name"]> =
   {
     home: "building-columns",
     wisdom: "book-quran",
+    training: "dumbbell",
     profile: "person-walking",
   } as const;
 
