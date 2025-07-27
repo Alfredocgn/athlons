@@ -14,10 +14,23 @@ import {
 interface WorkoutHistoryProps {
   sessions: WorkoutSession[];
   onSessionPress?: (session: WorkoutSession) => void;
+  title?: string;
+  limit?: number;
 }
-const WorkoutHistory = ({ sessions, onSessionPress }: WorkoutHistoryProps) => {
+const WorkoutHistory = ({
+  sessions,
+  onSessionPress,
+  title = "History Workouts",
+  limit,
+}: WorkoutHistoryProps) => {
   const theme = useTheme();
-  if (sessions.length === 0) {
+  const sortedSessions = [...sessions].sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
+  const sessionsToShow = limit
+    ? sortedSessions.slice(0, limit)
+    : sortedSessions;
+  if (sessionsToShow.length === 0) {
     return (
       <View style={styles.emptyContainer}>
         <Ionicons
@@ -38,13 +51,13 @@ const WorkoutHistory = ({ sessions, onSessionPress }: WorkoutHistoryProps) => {
   return (
     <View style={styles.container}>
       <Text style={[styles.sectionTitle, { color: theme.primaryText }]}>
-        History Workouts
+        {title}
       </Text>
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
       >
-        {sessions.map((session) => (
+        {sessionsToShow.map((session) => (
           <TouchableOpacity
             style={[
               styles.sessionCard,
@@ -90,6 +103,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: 20,
+    paddingHorizontal: 10,
   },
   sectionTitle: {
     fontSize: 18,

@@ -15,7 +15,7 @@ const ProgressBar = ({ progress, label }: ProgressBarProps) => {
       duration: 500,
       useNativeDriver: false,
     }).start();
-  }, [progress]);
+  }, [progress, animatedProgress]);
 
   const widthInterpolated = animatedProgress.interpolate({
     inputRange: [0, 1],
@@ -35,7 +35,6 @@ const ProgressBar = ({ progress, label }: ProgressBarProps) => {
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    marginVertical: 10,
   },
   label: {
     marginBottom: 6,
