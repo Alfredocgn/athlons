@@ -1,11 +1,27 @@
+import List from "@/core/components/profile/List";
+import UserData from "@/core/components/profile/UserData";
+import { SettingsProfileItems } from "@/core/constants/SettingsProfileItems";
+import { useTheme } from "@/core/hooks/useTheme";
 import React from "react";
-import { Text, View } from "react-native";
+import { ScrollView } from "react-native";
+
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const ProfileScreen = () => {
+  const theme = useTheme();
   return (
-    <View>
-      <Text>ProfileScreen</Text>
-    </View>
+    <SafeAreaView
+      style={{
+        flex: 1,
+        backgroundColor: theme.background,
+        paddingHorizontal: 20,
+      }}
+    >
+      <UserData />
+      <ScrollView>
+        <List items={SettingsProfileItems} />
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
