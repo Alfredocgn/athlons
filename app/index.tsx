@@ -30,7 +30,7 @@ const HomeScreen = () => {
           borderWidth: 2,
           borderColor: theme.primaryText,
         }}
-        onPress={() => router.push("/(tabs)/home")}
+        onPress={() => router.push("/auth/login")}
       >
         Login
       </CustomButton>

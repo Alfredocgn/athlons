@@ -15,6 +15,12 @@ export const Colors = {
     icon: "#687076",
     tabIconDefault: "#A6A6A6",
     tabIconSelected: tintColorLight,
+    border: "#E0E0E0",
+    secondaryText: "#8C6239",
+    disabledBackground: "#E8E8E8",
+    disabledBorder: "#CCCCCC",
+    error: "#FF4444",
+    success: "#4CAF50",
   },
   dark: {
     text: "#ECEDEE",
@@ -24,30 +30,11 @@ export const Colors = {
     icon: "#B4B9BF",
     tabIconDefault: "#B4B9BF",
     tabIconSelected: tintColorDark,
+    border: "#2A2A2A",
+    secondaryText: "#B4B9BF",
+    disabledBackground: "#1A1A1A",
+    disabledBorder: "#404040",
+    error: "#FF6B6B",
+    success: "#66BB6A",
   },
 };
-
-// // En modo light, sustituimos el dorado por un "golden-brown" más legible
-// const accentColorLight = '#8C6239'; // Bronce oscuro
-// const accentColorDark = '#CBA144';  // Dorado puro
-
-// export const Colors = {
-//   light: {
-//     text: '#1A1E22',
-//     primaryText: accentColorLight, // Para títulos
-//     background: '#F5F2EB',
-//     tint: accentColorLight,
-//     icon: '#687076',
-//     tabIconDefault: '#A6A6A6',
-//     tabIconSelected: accentColorLight,
-//   },
-//   dark: {
-//     text: '#ECEDEE',
-//     primaryText: accentColorDark,  // En oscuro usamos el dorado puro
-//     background: '#0C1B2A',
-//     tint: accentColorDark,
-//     icon: '#B4B9BF',
-//     tabIconDefault: '#B4B9BF',
-//     tabIconSelected: accentColorDark,
-//   },
-// };
