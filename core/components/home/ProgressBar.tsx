@@ -1,3 +1,4 @@
+import { useTheme } from "@/core/hooks/useTheme";
 import { useEffect, useRef } from "react";
 import { Animated, StyleSheet, Text, View } from "react-native";
 
@@ -7,6 +8,7 @@ interface ProgressBarProps {
 }
 
 const ProgressBar = ({ progress, label }: ProgressBarProps) => {
+  const theme = useTheme();
   const animatedProgress = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -23,11 +25,35 @@ const ProgressBar = ({ progress, label }: ProgressBarProps) => {
   });
   return (
     <View style={styles.container}>
-      {label && <Text style={styles.label}>{label}</Text>}
-      <View style={styles.barBackground}>
-        <Animated.View style={[styles.barFill, { width: widthInterpolated }]} />
+      {label && (
+        <Text
+          style={[
+            styles.label,
+            { color: theme.primaryText, fontFamily: "Roman" },
+          ]}
+        >
+          {label}
+        </Text>
+      )}
+      <View style={[styles.barBackground, { backgroundColor: theme.border }]}>
+        <Animated.View
+          style={[
+            styles.barFill,
+            {
+              width: widthInterpolated,
+              backgroundColor: theme.primaryText,
+            },
+          ]}
+        />
       </View>
-      <Text style={styles.percentage}>{`${Math.round(progress * 100)}%`}</Text>
+      <Text
+        style={[
+          styles.percentage,
+          { color: theme.primaryText, fontFamily: "Roman" },
+        ]}
+      >
+        {`${Math.round(progress * 100)}%`}
+      </Text>
     </View>
   );
 };
@@ -37,28 +63,24 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   label: {
-    marginBottom: 6,
-    fontSize: 16,
-    fontWeight: 600,
-    color: "#fff",
+    marginBottom: 8,
+    fontSize: 14,
+    fontWeight: "500",
   },
   barBackground: {
-    height: 14,
-    backgroundColor: "#cbd5e1",
-    borderRadius: 50,
+    height: 8,
+    borderRadius: 4,
     overflow: "hidden",
   },
   barFill: {
     height: "100%",
-    backgroundColor: "#0077b6",
-    borderRadius: 50,
+    borderRadius: 4,
   },
   percentage: {
     marginTop: 6,
-    fontSize: 14,
-    color: "#fff",
+    fontSize: 12,
     textAlign: "right",
-    fontWeight: 500,
+    fontWeight: "500",
   },
 });
 

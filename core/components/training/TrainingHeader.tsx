@@ -9,36 +9,59 @@ const TrainingHeader = () => {
   return (
     <View style={[styles.header, { backgroundColor: theme.background }]}>
       <View style={styles.titleContainer}>
-        <Ionicons name="fitness" size={24} color={theme.tint} />
-        <Text style={[styles.title, { color: theme.primaryText }]}>
-          Training
-        </Text>
+        <View
+          style={[styles.iconContainer, { backgroundColor: theme.primaryText }]}
+        >
+          <Ionicons name="fitness" size={24} color={theme.background} />
+        </View>
+        <View style={styles.textContainer}>
+          <Text style={[styles.title, { color: theme.primaryText }]}>
+            Training
+          </Text>
+        </View>
       </View>
-      <Text style={[styles.subtitle, { color: theme.text }]}>
-        Track your races improve your running
-      </Text>
     </View>
   );
 };
 const styles = StyleSheet.create({
   header: {
     paddingHorizontal: 20,
-    paddingVertical: 15,
+    paddingVertical: 20,
     borderBottomWidth: 1,
-    borderBottomColor: "rbga(0,0,0,0.1)",
+    borderBottomColor: "rgba(0,0,0,0.1)",
   },
   titleContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 5,
+  },
+  iconContainer: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 15,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  textContainer: {
+    flex: 1,
   },
   title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginLeft: 10,
+    fontSize: 28,
+    fontFamily: "Roman",
+    fontWeight: "600",
+    marginBottom: 4,
   },
   subtitle: {
-    fontSize: 14,
+    fontSize: 16,
+    fontFamily: "Roman",
     opacity: 0.8,
   },
 });

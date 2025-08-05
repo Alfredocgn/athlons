@@ -1,7 +1,6 @@
 import { useTheme } from "@/core/hooks/useTheme";
 import React from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
-import CustomButton from "../CustomButton";
 
 const profileImages = {
   Amazon: require("../../../assets/images/png/Amazon-profile.png"),
@@ -13,25 +12,21 @@ const UserData = () => {
   const gender = isAmazon ? "Amazon" : "Spartan";
 
   return (
-    <View style={style.container}>
-      <View style={style.imageContainer}>
-        <Image source={profileImages[gender]} style={style.image} />
+    <View style={styles.container}>
+      <View style={styles.imageContainer}>
+        <Image source={profileImages[gender]} style={styles.image} />
       </View>
-      <Text style={[style.text, { color: theme.primaryText }]}>
+      <Text style={[styles.name, { color: theme.primaryText }]}>
         {gender} User Name
       </Text>
-      <CustomButton
-        size="small"
-        style={[style.button, { backgroundColor: theme.primaryText }]}
-        onPress={() => console.log("Edit Profile")}
-      >
-        Edit Profile
-      </CustomButton>
+      <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
+        Runner • Athlete
+      </Text>
     </View>
   );
 };
 
-const style = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
@@ -53,14 +48,16 @@ const style = StyleSheet.create({
     height: "100%",
     resizeMode: "contain",
   },
-  text: {
-    fontSize: 20,
-    color: "black",
-    marginTop: 10,
+  name: {
+    fontSize: 24,
+    fontFamily: "Roman",
+    fontWeight: "600",
+    marginBottom: 5,
   },
-  button: {
-    marginTop: 20,
-    paddingVertical: 8,
+  subtitle: {
+    fontSize: 16,
+    fontFamily: "Roman",
+    opacity: 0.8,
   },
 });
 

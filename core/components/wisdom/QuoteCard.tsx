@@ -27,10 +27,13 @@ const QuoteCard = ({ text, author, category }: QuoteCardProps) => {
         />
       </View>
 
-      <View>
-        <Text style={styles.quoteText}>{`"${text}"`}</Text>
-        <Text style={styles.author}>– {author}</Text>
+      <View style={styles.content}>
+        <Text style={[styles.quoteText, { fontFamily: "Roman" }]}>
+          {`"${text}"`}
+        </Text>
+        <Text style={[styles.author, { fontFamily: "Roman" }]}>– {author}</Text>
       </View>
+
       <View style={styles.buttonContainer}>
         <View
           style={[
@@ -38,13 +41,19 @@ const QuoteCard = ({ text, author, category }: QuoteCardProps) => {
             isStoic ? styles.tagStoic : styles.tagMotivational,
           ]}
         >
-          <Text style={styles.tagText}>{category}</Text>
+          <Text style={[styles.tagText, { fontFamily: "Roman" }]}>
+            {category}
+          </Text>
         </View>
         <CustomButton
           onPress={() => console.log("Share button pressed")}
           icon="share-outline"
           style={styles.shareButton}
-          textStyle={{ fontSize: 12 }}
+          textStyle={{
+            fontSize: 12,
+            fontFamily: "Roman",
+            fontWeight: "500",
+          }}
           iconSize={18}
         >
           Share
@@ -58,8 +67,7 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: 16,
     padding: 20,
-    marginVertical: 10,
-    marginHorizontal: 16,
+    marginBottom: 15,
     elevation: 5,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
@@ -68,11 +76,15 @@ const styles = StyleSheet.create({
     minHeight: 160,
     justifyContent: "space-between",
   },
+  content: {
+    flex: 1,
+  },
   quoteText: {
     fontSize: 18,
     color: "#fff",
     fontStyle: "italic",
     marginBottom: 12,
+    lineHeight: 26,
   },
   author: {
     fontSize: 16,
@@ -82,8 +94,8 @@ const styles = StyleSheet.create({
   },
   tag: {
     alignItems: "center",
-    paddingHorizontal: 10,
-    paddingVertical: 4,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
     borderRadius: 12,
     justifyContent: "center",
   },
@@ -100,8 +112,8 @@ const styles = StyleSheet.create({
   },
   shareButton: {
     borderRadius: 12,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
     backgroundColor: "#5c6e74",
   },
   buttonContainer: {

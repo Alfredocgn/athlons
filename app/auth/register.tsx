@@ -104,7 +104,8 @@ const Register = () => {
   };
 
   const updateForm = (field: keyof RegisterForm, value: string) => {
-    setRegisterForm((prev) => ({ ...prev, [field]: value }));
+    const processedValue = field === "email" ? value.toLowerCase() : value;
+    setRegisterForm((prev) => ({ ...prev, [field]: processedValue }));
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: "" }));
     }
@@ -173,6 +174,8 @@ const Register = () => {
           onChangeText={(text) => updateForm("password", text)}
           error={errors.password}
           labelColor={theme.primaryText}
+          showPasswordToggle={true}
+          secureTextEntry={true}
         />
         <CustomInput
           placeholder="Confirm Password"
@@ -182,6 +185,8 @@ const Register = () => {
           onChangeText={(text) => updateForm("confirmPassword", text)}
           error={errors.confirmPassword}
           labelColor={theme.primaryText}
+          showPasswordToggle={true}
+          secureTextEntry={true}
         />
         {(errors.firstName ||
           errors.lastName ||

@@ -127,41 +127,62 @@ const TrainingScreen = () => {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
+        {/* Current Session Section */}
         {!isTracking ? (
           <View style={styles.startSection}>
-            <ActionButton
-              icon="play"
-              title="Start Training"
-              onPress={handleStartWorkout}
-              variant="primary"
-              size="large"
-            />
-            <View style={styles.permissionStatus}>
-              {permission.granted ? (
-                <Text style={[styles.statusText, { color: theme.text }]}>
-                  Ready to track your race
-                </Text>
-              ) : (
-                <Text style={[styles.statusText, { color: theme.text }]}>
-                  Location permission required.
-                </Text>
-              )}
+            <View style={[styles.card, { backgroundColor: "white" }]}>
+              <Text style={[styles.sectionTitle, { color: theme.primaryText }]}>
+                Start Training
+              </Text>
+              <Text
+                style={[styles.sectionSubtitle, { color: theme.secondaryText }]}
+              >
+                Track your runs and improve your performance
+              </Text>
+              <ActionButton
+                icon="play"
+                title="Start Training"
+                onPress={handleStartWorkout}
+                variant="primary"
+                size="large"
+              />
+              <View style={styles.permissionStatus}>
+                {permission.granted ? (
+                  <Text style={[styles.statusText, { color: theme.text }]}>
+                    ✓ Ready to track your race
+                  </Text>
+                ) : (
+                  <Text style={[styles.statusText, { color: theme.error }]}>
+                    ⚠ Location permission required
+                  </Text>
+                )}
+              </View>
             </View>
           </View>
         ) : (
           <View style={styles.trackingSection}>
-            <WorkoutTracker
-              stats={stats}
-              onPause={handlePauseWorkout}
-              onResume={handleResumeWorkout}
-              onFinish={handleFinishWorkout}
-              onCancel={handleCancelWorkout}
-              isPaused={isPaused}
-              theme={theme}
-            />
+            <View style={[styles.card, { backgroundColor: "white" }]}>
+              <Text style={[styles.sectionTitle, { color: theme.primaryText }]}>
+                Active Training
+              </Text>
+              <WorkoutTracker
+                stats={stats}
+                onPause={handlePauseWorkout}
+                onResume={handleResumeWorkout}
+                onFinish={handleFinishWorkout}
+                onCancel={handleCancelWorkout}
+                isPaused={isPaused}
+                theme={theme}
+              />
+            </View>
           </View>
         )}
+
+        {/* History Section */}
         <View style={styles.historySection}>
+          <Text style={[styles.sectionTitle, { color: theme.primaryText }]}>
+            Training History
+          </Text>
           <WorkoutHistory
             sessions={sessions}
             onSessionPress={handleSessionPress}
@@ -180,30 +201,51 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    padding: 20,
+    paddingHorizontal: 20,
     paddingBottom: 40,
   },
   startSection: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    marginTop: 20,
   },
   trackingSection: {
-    height: 400,
-    marginBottom: 20,
+    marginTop: 20,
   },
   historySection: {
-    flex: 1,
-    minHeight: 200,
+    marginTop: 30,
+  },
+  card: {
+    borderRadius: 12,
+    padding: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
+    alignItems: "center",
+  },
+  sectionTitle: {
+    fontFamily: "Roman",
+    fontSize: 20,
+    fontWeight: "600",
+    marginBottom: 8,
+  },
+  sectionSubtitle: {
+    fontFamily: "Roman",
+    fontSize: 14,
+    marginBottom: 20,
+    opacity: 0.8,
   },
   permissionStatus: {
-    marginTop: 20,
+    marginTop: 15,
     alignItems: "center",
   },
   statusText: {
     fontSize: 14,
     textAlign: "center",
-    opacity: 0.8,
+    fontFamily: "Roman",
   },
 });
 
