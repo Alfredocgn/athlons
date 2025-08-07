@@ -1,4 +1,5 @@
 import CustomInput from "@/core/auth/CustomInput";
+import { useLogin } from "@/core/auth/hooks/useAuth";
 import CustomButton from "@/core/components/CustomButton";
 import { useTheme } from "@/core/hooks/useTheme";
 import { isValidEmail, isValidPassword } from "@/core/utils/stringValidators";
@@ -24,6 +25,7 @@ interface FormErrors {
 }
 
 const LoginScreen = () => {
+  const loginMutation = useLogin();
   const [loginForm, setLoginForm] = useState<LoginForm>({
     email: "",
     password: "",
@@ -56,9 +58,18 @@ const LoginScreen = () => {
     return isValid;
   };
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (validateForm()) {
-      router.push("/(tabs)/home");
+      try {
+        console.log("Intentando login con:", loginForm);
+        await loginMutation.mutateAsync(loginForm);
+        console.log("Login exitoso");
+        router.push("/(tabs)/home");
+      } catch (error) {
+        console.error("Error de login:", error);
+        // Aquí puedes mostrar un mensaje de error al usuario
+        alert("Error al iniciar sesión. Verifica tus credenciales.");
+      }
     }
   };
 

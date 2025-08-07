@@ -1,10 +1,13 @@
+import { queryClient } from "@/core/api/queryClient";
 import CustomInput from "@/core/auth/CustomInput";
+import { useRegister } from "@/core/auth/hooks/useAuth";
 import CustomButton from "@/core/components/CustomButton";
 import { useTheme } from "@/core/hooks/useTheme";
 import { isValidEmail, isValidPassword } from "@/core/utils/stringValidators";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -30,6 +33,8 @@ interface FormErrors {
 }
 const Register = () => {
   const theme = useTheme();
+  const { mutate: registerUser, isPending } = useRegister();
+
   const [registerForm, setRegisterForm] = useState<RegisterForm>({
     firstName: "",
     lastName: "",
@@ -98,8 +103,20 @@ const Register = () => {
 
   const handleRegister = () => {
     if (validateForm()) {
-      console.log("Form Data", registerForm);
-      router.push("/(tabs)/home");
+      const { confirmPassword, ...registerData } = registerForm;
+      registerUser(registerData, {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ["user"] });
+          router.replace("/(tabs)/home");
+        },
+        onError: (error) => {
+          const errorMessage =
+            (error as any)?.response?.data?.errors?.[0]?.message ||
+            "An unexpected error occurred. Please try again.";
+          console.log(errorMessage);
+          Alert.alert("Registration Failed", errorMessage, [{ text: "OK" }]);
+        },
+      });
     }
   };
 
@@ -120,6 +137,7 @@ const Register = () => {
     isValidEmail(registerForm.email) &&
     isValidPassword(registerForm.password) &&
     registerForm.confirmPassword === registerForm.password;
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -161,6 +179,7 @@ const Register = () => {
           placeholder="Email"
           icon="mail"
           label="Email"
+          keyboardType="email-address"
           value={registerForm.email}
           onChangeText={(text) => updateForm("email", text)}
           error={errors.email}
@@ -223,21 +242,28 @@ const Register = () => {
         <CustomButton
           textStyle={{
             fontFamily: "Roman",
-            color: isFormValid ? theme.primaryText : theme.secondaryText,
+            color:
+              isFormValid && !isPending
+                ? theme.primaryText
+                : theme.secondaryText,
           }}
           style={{
-            backgroundColor: isFormValid
-              ? theme.background
-              : theme.disabledBackground,
+            backgroundColor:
+              isFormValid && !isPending
+                ? theme.background
+                : theme.disabledBackground,
             borderWidth: 2,
-            borderColor: isFormValid ? theme.primaryText : theme.disabledBorder,
-            opacity: isFormValid ? 1 : 0.6,
+            borderColor:
+              isFormValid && !isPending
+                ? theme.primaryText
+                : theme.disabledBorder,
+            opacity: isFormValid && !isPending ? 1 : 0.6,
             marginTop: 20,
           }}
           onPress={handleRegister}
-          disabled={!isFormValid}
+          disabled={!isFormValid || isPending}
         >
-          Create Account
+          {isPending ? "Creating Account..." : "Create Account"}
         </CustomButton>
         <View style={styles.signInContainer}>
           <Text
