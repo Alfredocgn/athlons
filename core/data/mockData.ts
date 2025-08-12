@@ -1,4 +1,4 @@
-import { DeviceType, WorkoutSession, WorkoutType } from "../types/training";
+import { DeviceType, WorkoutSession, WorkoutType } from "../types/workout";
 
 export const mockWorkoutSessions: WorkoutSession[] = [
   {

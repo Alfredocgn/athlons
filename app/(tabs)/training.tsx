@@ -5,14 +5,14 @@ import WorkoutTracker from "@/core/components/training/WorkoutTracker";
 import { useLocationPermission } from "@/core/hooks/useLocationPermission";
 import { useLocationTracking } from "@/core/hooks/useLocationTracking";
 import { useTheme } from "@/core/hooks/useTheme";
-import { useWorkoutSession } from "@/core/hooks/useWorkoutSession";
 import { useWorkoutStats } from "@/core/hooks/useWorkoutStats";
-import { WorkoutType } from "@/core/types/training";
+import { WorkoutType } from "@/core/types/workout";
 import {
   formatDistance,
   formatPace,
   formatTime,
 } from "@/core/utils/formatters";
+import { useWorkoutSession } from "@/core/workouts/hooks/useWorkoutSession";
 import React, { useEffect, useState } from "react";
 import {
   Alert,
@@ -61,7 +61,7 @@ const TrainingScreen = () => {
       );
       return;
     }
-    startSession("Race", WorkoutType.RUNNING);
+    startSession("Race", WorkoutType.RUN);
     setIsTracking(true);
   };
   const handlePauseWorkout = () => {

@@ -1,5 +1,5 @@
 import { useTheme } from "@/core/hooks/useTheme";
-import { WorkoutSession } from "@/core/types/training";
+import { WorkoutSession } from "@/core/types/workout";
 import { formatDate, formatPace, formatTime } from "@/core/utils/formatters";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import React from "react";

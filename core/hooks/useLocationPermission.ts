@@ -1,6 +1,10 @@
 import * as Location from "expo-location";
 import { useEffect, useState } from "react";
-import { LocationPermission } from "../types/training";
+
+interface LocationPermission {
+  granted: boolean;
+  status: "granted" | "denied" | "undetermined";
+}
 
 export const useLocationPermission = () => {
   const [permission, setPermission] = useState<LocationPermission>({

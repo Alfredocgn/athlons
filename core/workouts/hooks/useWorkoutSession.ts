@@ -1,34 +1,36 @@
-import { useCallback, useEffect, useState } from "react";
-import { mockWorkoutSessions } from "../data/mockData";
+import { useCallback, useState } from "react";
 import {
+  CreateWorkoutSessionInput,
   DeviceType,
+  LocalWorkoutSession,
   TrackPoint,
-  WorkoutSession,
+  WorkoutStatus,
   WorkoutType,
-} from "../types/training";
+} from "../../types/workout";
+import { useCreateWorkout, useGetWorkouts } from "./useWorkouts";
 
 export const useWorkoutSession = () => {
-  const [currentSession, setCurrentSession] = useState<WorkoutSession | null>(
-    null
-  );
-  const [sessions, setSessions] = useState<WorkoutSession[]>([]);
-
-  useEffect(() => {
-    setSessions(mockWorkoutSessions);
-  }, []);
+  const [currentSession, setCurrentSession] =
+    useState<LocalWorkoutSession | null>(null);
+  const { data: backendSessions = [], isLoading, error } = useGetWorkouts();
+  const {
+    mutate: createWorkout,
+    isPending,
+    error: createError,
+  } = useCreateWorkout();
 
   const startSession = useCallback(
-    (title: string, workoutType: WorkoutType = WorkoutType.RUNNING) => {
-      const newSession: WorkoutSession = {
-        id: Date.now().toString(),
+    (title: string, workoutType: WorkoutType = WorkoutType.RUN) => {
+      const newSession: LocalWorkoutSession = {
+        localId: Date.now().toString(),
         title,
         date: new Date(),
         duration: 0,
         distance: 0,
         workoutType,
-        importedFrom: DeviceType.MOBILE,
-        status: "active",
+        importedFrom: DeviceType.OTHER,
         trackPoints: [],
+        status: WorkoutStatus.ACTIVE,
       };
       setCurrentSession(newSession);
       return newSession;
@@ -36,7 +38,7 @@ export const useWorkoutSession = () => {
     []
   );
 
-  const updateSession = useCallback((updates: Partial<WorkoutSession>) => {
+  const updateSession = useCallback((updates: Partial<LocalWorkoutSession>) => {
     setCurrentSession((prev) => (prev ? { ...prev, ...updates } : null));
   }, []);
 
@@ -51,11 +53,11 @@ export const useWorkoutSession = () => {
   }, []);
 
   const pauseSession = useCallback(() => {
-    updateSession({ status: "paused" });
+    updateSession({ status: WorkoutStatus.PAUSED });
   }, [updateSession]);
 
   const resumeSession = useCallback(() => {
-    updateSession({ status: "active" });
+    updateSession({ status: WorkoutStatus.ACTIVE });
   }, [updateSession]);
   const finishSession = useCallback(
     (finalStats: {
@@ -67,24 +69,24 @@ export const useWorkoutSession = () => {
     }) => {
       if (!currentSession) return null;
 
-      const completedSession: WorkoutSession = {
-        ...currentSession,
+      const workoutToCreate: CreateWorkoutSessionInput = {
+        title: currentSession.title,
         date: new Date(),
         distance: finalStats.distance,
         duration: finalStats.duration,
         avgPace: finalStats.pace,
         caloriesBurned: finalStats.caloriesBurned,
         notes: finalStats.notes,
-        status: "completed",
+        workoutType: currentSession.workoutType,
+        importedFrom: currentSession.importedFrom,
+        trackPoints: currentSession.trackPoints || [],
       };
-
-      setSessions((prev) => [completedSession, ...prev]);
-
+      createWorkout(workoutToCreate);
       setCurrentSession(null);
 
-      return completedSession;
+      return workoutToCreate;
     },
-    [currentSession]
+    [currentSession, createWorkout]
   );
 
   const cancelSession = useCallback(() => {
@@ -94,12 +96,14 @@ export const useWorkoutSession = () => {
   const loadSessions = () => {
     // TODO CONECTAR CON BACKEND PARA TRAER SESISONS
   };
-  const clearHistory = useCallback(() => {
-    setSessions([]);
-  }, []);
+
   return {
     currentSession,
-    sessions,
+    sessions: backendSessions,
+    isLoading,
+    isCreating: isPending,
+    error,
+    createError,
 
     startSession,
     updateSession,
@@ -109,7 +113,6 @@ export const useWorkoutSession = () => {
     finishSession,
     cancelSession,
     loadSessions,
-    clearHistory,
 
     isActive: currentSession?.status === "active",
     isPaused: currentSession?.status === "paused",

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { TrackPoint, WorkoutStats } from "../types/training";
+import { TrackPoint, WorkoutStats } from "../types/workout";
 
 export const useWorkoutStats = (
   trackPoints: TrackPoint[],

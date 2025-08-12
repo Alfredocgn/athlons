@@ -1,6 +1,6 @@
 import * as Location from "expo-location";
 import { useEffect, useRef, useState } from "react";
-import { TrackPoint } from "../types/training";
+import { TrackPoint } from "../types/workout";
 
 export const useLocationTracking = (isActive: boolean) => {
   const [currentLocation, setCurrentLocation] = useState<TrackPoint | null>(

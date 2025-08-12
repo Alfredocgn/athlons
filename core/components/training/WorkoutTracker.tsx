@@ -1,5 +1,5 @@
 import { useTheme } from "@/core/hooks/useTheme";
-import { WorkoutStats } from "@/core/types/training";
+import { WorkoutStats } from "@/core/types/workout";
 import {
   formatDistance,
   formatPace,
