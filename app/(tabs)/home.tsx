@@ -1,8 +1,8 @@
 import CustomButton from "@/core/components/CustomButton";
 import HomeScreenHeader from "@/core/components/home/HomeScreenHeader";
 import WorkoutHistory from "@/core/components/training/WorkoutHistory";
-import { mockWorkoutSessions } from "@/core/data/mockData";
 import { useTheme } from "@/core/hooks/useTheme";
+import { useWorkoutSession } from "@/core/workouts/hooks/useWorkoutSession";
 import { router } from "expo-router";
 
 import React from "react";
@@ -10,6 +10,7 @@ import { SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
 
 const HomeScreen = () => {
   const theme = useTheme();
+  const { sessions } = useWorkoutSession();
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: theme.background }]}
@@ -48,16 +49,11 @@ const HomeScreen = () => {
           </View>
         </View>
 
-        {/* Recent Activity Section */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: theme.primaryText }]}>
             Recent Activity
           </Text>
-          <WorkoutHistory
-            sessions={mockWorkoutSessions}
-            title="Last workout"
-            limit={1}
-          />
+          <WorkoutHistory sessions={sessions} title="Last workout" limit={1} />
         </View>
       </ScrollView>
     </SafeAreaView>

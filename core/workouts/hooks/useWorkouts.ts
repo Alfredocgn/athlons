@@ -1,6 +1,7 @@
 import { apiClient } from "@/core/api/api";
 import {
   CREATE_WORKOUT_SESSION,
+  GET_WORKOUT_SESSION,
   GET_WORKOUT_SESSIONS,
 } from "@/core/graphql/Workouts";
 import { CreateWorkoutSessionInput } from "@/core/types/workout";
@@ -53,5 +54,23 @@ export const useCreateWorkout = () => {
     },
     retry: 2,
     retryDelay: 1000,
+  });
+};
+
+export const useGetWorkout = (workoutId: string) => {
+  return useQuery({
+    queryKey: ["workout", workoutId],
+    queryFn: async () => {
+      const response = await apiClient.post("", {
+        query: print(GET_WORKOUT_SESSION),
+        variables: { id: workoutId },
+      });
+      console.log("[useGetWorkout] response:", response.data);
+      if (response.data.errors) {
+        console.error("[useGetWorkout] Graphql Error:", response.data.errors);
+        throw new Error(response.data.errors[0].message);
+      }
+      return response.data.data.workoutSession || null;
+    },
   });
 };

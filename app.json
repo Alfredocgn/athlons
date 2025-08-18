@@ -25,6 +25,7 @@
     },
     "plugins": [
       "expo-router",
+
       [
         "expo-splash-screen",
         {
@@ -39,7 +40,8 @@
         {
           "locationAlwaysAndWhenInUsePermission": "Allow $(Athlons) to use your location."
         }
-      ]
+      ],
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true

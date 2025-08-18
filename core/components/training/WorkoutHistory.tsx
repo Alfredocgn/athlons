@@ -27,6 +27,7 @@ const WorkoutHistory = ({
   const sortedSessions = [...sessions].sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
   );
+
   const sessionsToShow = limit
     ? sortedSessions.slice(0, limit)
     : sortedSessions;
@@ -48,6 +49,7 @@ const WorkoutHistory = ({
       </View>
     );
   }
+
   return (
     <View style={styles.container}>
       <ScrollView
@@ -73,7 +75,7 @@ const WorkoutHistory = ({
                 <Text
                   style={[styles.sessionDate, { color: theme.primaryText }]}
                 >
-                  {formatDate(session.date)}
+                  {formatDate(new Date(session.date))}
                 </Text>
                 <Text
                   style={[styles.sessionTitle, { color: theme.secondaryText }]}

@@ -84,3 +84,34 @@ export const GET_WORKOUT_SESSIONS = gql`
     }
   }
 `;
+
+export const GET_WORKOUT_SESSION = gql`
+  query GetWorkoutSession($id: ID!) {
+    workoutSession(id: $id) {
+      id
+      title
+      date
+      distance
+      duration
+      avgPace
+      caloriesBurned
+      workoutType
+      importedFrom
+      notes
+      routeData
+      runId
+      externalId
+      userId
+      createdAt
+      updatedAt
+      trackPoints {
+        id
+        latitude
+        longitude
+        timestamp
+        elevation
+        heartRate
+      }
+    }
+  }
+`;

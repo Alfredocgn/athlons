@@ -13,6 +13,7 @@ import {
   formatTime,
 } from "@/core/utils/formatters";
 import { useWorkoutSession } from "@/core/workouts/hooks/useWorkoutSession";
+import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   Alert,
@@ -111,10 +112,10 @@ const TrainingScreen = () => {
   };
 
   const handleSessionPress = (session: any) => {
-    Alert.alert(
-      "Training details",
-      `Time: ${session.duration}s\Distance: ${session.distance}m\nPace: ${session.avgPace}s/km`
-    );
+    router.push({
+      pathname: "/workouts/workout-details",
+      params: { sessionId: session.id },
+    } as any);
   };
 
   return (
