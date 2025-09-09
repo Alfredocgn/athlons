@@ -10,3 +10,10 @@ export const isValidEmail = (email: string) => {
 export const isValidPassword = (password: string) => {
   return passwordRegex.test(password.trim());
 };
+export const isValidDate = (dateString: string): boolean => {
+  const regex = /^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/\d{4}$/;
+  if (!regex.test(dateString)) return false;
+
+  const date = new Date(dateString);
+  return date instanceof Date && !isNaN(date.getTime());
+};

@@ -55,27 +55,3 @@ export const REGISTER_MUTATION = gql`
     }
   }
 `;
-
-export const GET_CURRENT_USER = gql`
-  query GetCurrentUser {
-    currentUser {
-      id
-      email
-      firstName
-      lastName
-      bio
-      gender
-      pace
-      height
-      weight
-      preferredDistance
-      weeklyGoal
-      profileImg
-      socialLinks
-      enableEmailNotifications
-      enablePushNotifications
-      createdAt
-      updatedAt
-    }
-  }
-`;

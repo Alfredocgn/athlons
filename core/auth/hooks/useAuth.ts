@@ -1,12 +1,8 @@
 import { apiClient } from "@/core/api/api";
-import {
-  GET_CURRENT_USER,
-  LOGIN_MUTATION,
-  REGISTER_MUTATION,
-} from "@/core/graphql/Auth";
+import { LOGIN_MUTATION, REGISTER_MUTATION } from "@/core/graphql/Auth";
 import { AuthResponse, LoginInput, RegisterInput } from "@/core/types/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { print } from "graphql";
 
 export const useLogin = () => {
@@ -55,18 +51,6 @@ export const useLogin = () => {
     },
     onError: (error) => {
       console.error("[useLogin] Error:", error);
-    },
-  });
-};
-
-export const useUser = () => {
-  return useQuery({
-    queryKey: ["user"],
-    queryFn: async () => {
-      const response = await apiClient.post("", {
-        query: print(GET_CURRENT_USER),
-      });
-      return response.data.data.currentUser;
     },
   });
 };
