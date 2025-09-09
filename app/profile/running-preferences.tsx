@@ -1,10 +1,16 @@
+import { queryClient } from "@/core/api/queryClient";
 import CustomInput from "@/core/auth/CustomInput";
 import CustomButton from "@/core/components/CustomButton";
 import { useTheme } from "@/core/hooks/useTheme";
+import {
+  useRunningPreferences,
+  useUpdateRunningPreferences,
+} from "@/core/profile/useProfile";
 import { Picker } from "@react-native-picker/picker";
 import { router } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -13,22 +19,96 @@ import {
   View,
 } from "react-native";
 
+export interface RunningPreferences {
+  id: string;
+  preferredDistance: number;
+  weeklyGoal: number;
+  pace: string;
+}
+export interface Pace {
+  BEGINNER: "BEGINNER";
+  INTERMEDIATE: "INTERMEDIATE";
+  ADVANCED: "ADVANCED";
+  ELITE: "ELITE";
+}
 interface RunningPreferencesForm {
-  preferredDistance?: string;
-  weeklyGoal?: string;
-  pace?: string;
+  preferredDistance?: number | undefined;
+  weeklyGoal?: number | undefined;
+  pace?: string | undefined;
 }
 const RunningPreferencesScreen = () => {
   const theme = useTheme();
+  const user = useRunningPreferences();
+  const { mutate: updateUser, isPending } = useUpdateRunningPreferences();
   const [form, setForm] = useState<RunningPreferencesForm>({
-    preferredDistance: "",
-    weeklyGoal: "",
-    pace: "",
+    preferredDistance: undefined,
+    weeklyGoal: undefined,
+    pace: undefined,
   });
 
+  useEffect(() => {
+    if (user.data) {
+      setForm({
+        preferredDistance: user.data.preferredDistance || undefined,
+        weeklyGoal: user.data.weeklyGoal || undefined,
+        pace: user.data.pace || "",
+      });
+    }
+  }, [user.data]);
+
+  const validateForm = (form: RunningPreferencesForm): string[] => {
+    const errors: string[] = [];
+
+    if (
+      !form.preferredDistance ||
+      form.preferredDistance <= 0 ||
+      form.preferredDistance > 300
+    ) {
+      errors.push("Preferred distance must be between 1 and 300 km");
+    }
+
+    if (!form.weeklyGoal || form.weeklyGoal <= 0 || form.weeklyGoal > 500) {
+      errors.push("Weekly goal must be between 1 and 500 km");
+    }
+    if (!form.pace) {
+      errors.push("Pace level is required");
+    }
+
+    return errors;
+  };
+
   const handleSave = () => {
-    console.log("Saving Running preferenes", form);
-    router.back();
+    const errors = validateForm(form);
+    if (errors.length > 0) {
+      Alert.alert("Validation Error", errors.join("\n"), [{ text: "OK" }]);
+      return;
+    }
+    const updateData = {
+      id: user.data?.id,
+      preferredDistance: form.preferredDistance,
+      weeklyGoal: form.weeklyGoal,
+      pace: form.pace,
+    };
+    updateUser(updateData, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["user", "running"] });
+        queryClient.invalidateQueries({ queryKey: ["user"] });
+        Alert.alert("Success", "Profile updated successfully!", [
+          {
+            text: "OK",
+            onPress: () => router.back(),
+          },
+        ]);
+      },
+
+      onError: (error) => {
+        const errorMessage =
+          (error as any)?.response?.data?.errors?.[0]?.message ||
+          "An unexpected error occurred. Please try again.";
+        console.log(errorMessage);
+        Alert.alert("Registration Failed", errorMessage, [{ text: "OK" }]);
+      },
+    });
   };
   return (
     <KeyboardAvoidingView
@@ -47,9 +127,14 @@ const RunningPreferencesScreen = () => {
           placeholder="Preferred distance (km)"
           icon="map"
           label="Preferred Distance"
-          value={form.preferredDistance}
+          value={
+            form.preferredDistance ? form.preferredDistance.toString() : ""
+          }
           onChangeText={(text) =>
-            setForm((prev) => ({ ...prev, preferredDistance: text }))
+            setForm((prev) => ({
+              ...prev,
+              preferredDistance: text === "" ? undefined : Number(text),
+            }))
           }
           labelColor={theme.primaryText}
           keyboardType="numeric"
@@ -58,9 +143,12 @@ const RunningPreferencesScreen = () => {
           placeholder="Weekly Goal (km)"
           icon="flag"
           label="Weekly Goal"
-          value={form.weeklyGoal}
+          value={form.weeklyGoal ? form.weeklyGoal.toString() : ""}
           onChangeText={(text) =>
-            setForm((prev) => ({ ...prev, weeklyGoal: text }))
+            setForm((prev) => ({
+              ...prev,
+              weeklyGoal: text === "" ? undefined : Number(text),
+            }))
           }
           labelColor={theme.primaryText}
           keyboardType="numeric"
@@ -89,10 +177,10 @@ const RunningPreferencesScreen = () => {
               ]}
             >
               <Picker.Item label="Select pace level" value="" />
-              <Picker.Item label="Beginner" value="beginner" />
-              <Picker.Item label="Intermediate" value="intermediate" />
-              <Picker.Item label="Advanced" value="advanced" />
-              <Picker.Item label="Elite" value="elite" />
+              <Picker.Item label="Beginner" value="BEGINNER" />
+              <Picker.Item label="Intermediate" value="INTERMEDIATE" />
+              <Picker.Item label="Advanced" value="ADVANCED" />
+              <Picker.Item label="Elite" value="ELITE" />
             </Picker>
           </View>
         </View>
@@ -108,6 +196,7 @@ const RunningPreferencesScreen = () => {
             borderColor: theme.text,
           }}
           onPress={handleSave}
+          disabled={isPending}
         >
           Save Changes
         </CustomButton>

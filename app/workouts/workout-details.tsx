@@ -1,51 +1,67 @@
 import { useGetWorkout } from "@/core/workouts/hooks/useWorkouts";
 import { useLocalSearchParams } from "expo-router";
-import React from "react";
-import { Dimensions, StyleSheet, Text } from "react-native";
-import MapView from "react-native-maps";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import React, { useState } from "react";
+import { StyleSheet, View } from "react-native";
+import MapView, { Marker, Polyline } from "react-native-maps";
 
 const WorkoutDetailsScreen = () => {
   const { sessionId } = useLocalSearchParams();
   const { data: session } = useGetWorkout(sessionId as string);
-  const { width, height } = Dimensions.get("window");
+  const [mapReady, setMapReady] = useState(false);
 
   const mockSession = {
     title: "Morning Run",
     trackPoints: [
-      { latitude: 19.4326, longitude: -99.1332 },
-      { latitude: 19.433, longitude: -99.134 },
-      { latitude: 19.434, longitude: -99.135 },
-      { latitude: 19.435, longitude: -99.136 },
+      { latitude: -34.5764, longitude: -58.4131 },
+      { latitude: -34.5758, longitude: -58.4125 },
+      { latitude: -34.5752, longitude: -58.4119 },
+      { latitude: -34.5746, longitude: -58.4113 },
+      { latitude: -34.574, longitude: -58.4107 },
+      { latitude: -34.5734, longitude: -58.4101 },
+      { latitude: -34.5728, longitude: -58.4095 },
+      { latitude: -34.5722, longitude: -58.4089 },
     ],
   };
 
-  const ASPECT_RATIO = width / height;
-  const LATITUDE = 37.78825;
-  const LONGITUDE = -122.4324;
-  const LATITUDE_DELTA = 0.0922;
-  const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
-
-  const SAMPLE_REGION = {
-    latitude: LATITUDE,
-    longitude: LONGITUDE,
-    latitudeDelta: LATITUDE_DELTA,
-    longitudeDelta: LONGITUDE_DELTA,
+  const onRegionChange = (region) => {
+    console.log("Region:", region);
   };
-  const { title, trackPoints } = mockSession;
+
+  const { trackPoints } = mockSession;
+
   return (
-    <SafeAreaProvider style={styles.container}>
-      <Text style={{ color: "black", fontSize: 20, marginBottom: 10 }}>
-        {title}
-      </Text>
-      <MapView liteMode style={styles.map} initialRegion={SAMPLE_REGION}>
-        {/* <Polyline
+    <View style={styles.container}>
+      <MapView
+        style={styles.map}
+        initialRegion={{
+          latitude: -34.5743, // ✅ Buenos Aires
+          longitude: -58.411, // ✅ Buenos Aires
+          latitudeDelta: 0.01, // ✅ Zoom correcto
+          longitudeDelta: 0.01, // ✅ Zoom correcto
+        }}
+        onRegionChange={onRegionChange}
+        mapType="standard"
+      >
+        {/* Marcador de inicio */}
+        <Marker coordinate={trackPoints[0]} title="Inicio" pinColor="green" />
+
+        {/* Marcador de fin */}
+        <Marker
+          coordinate={trackPoints[trackPoints.length - 1]}
+          title="Fin"
+          pinColor="red"
+        />
+
+        {/* Línea de la ruta */}
+        <Polyline
           coordinates={trackPoints}
           strokeColor="#FF0000"
           strokeWidth={4}
-        /> */}
+          lineCap="round"
+          lineJoin="round"
+        />
       </MapView>
-    </SafeAreaProvider>
+    </View>
   );
 };
 
@@ -56,8 +72,9 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   map: {
-    width: Dimensions.get("window").width,
-    height: 300,
+    flex: 1, // ✅ Ocupa toda la pantalla
+    width: "100%", // ✅ Ancho completo
+    height: "100%", // ✅ Alto completo
   },
 });
 

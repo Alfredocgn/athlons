@@ -111,7 +111,7 @@ const LoginScreen = () => {
           icon="mail"
           label="Email"
           value={loginForm.email}
-          onChangeText={(text) => updateForm("email", text)}
+          onChangeText={(text) => updateForm("email", text.toLowerCase())}
           error={errors.email}
           autoCapitalize="none"
           keyboardType="email-address"
