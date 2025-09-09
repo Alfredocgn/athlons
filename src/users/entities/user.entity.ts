@@ -20,6 +20,9 @@ export class User {
   height?: number;
 
   @Field(() => Float, { nullable: true })
+  birthDate?: number;
+
+  @Field(() => Float, { nullable: true })
   weight?: number;
 
   @Field(() => Float, { nullable: true })

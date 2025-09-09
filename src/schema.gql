@@ -251,11 +251,17 @@ type TrackPoint {
 
 input UpdateProfileInput {
   bio: String
+  birthDate: DateTime
   enableEmailNotifications: Boolean
   enablePushNotifications: Boolean
+  firstName: String
+  gender: Gender
   height: Float
   id: ID!
+  lastName: String
+  pace: Pace
   preferredDistance: Float
+  profileImg: String
   socialLinks: JSON
   weeklyGoal: Float
   weight: Float
@@ -323,6 +329,7 @@ input UpdateWorkoutSessionInput {
 
 type User {
   bio: String
+  birthDate: Float
   createdAt: DateTime!
   email: String
   enableEmailNotifications: Boolean!
