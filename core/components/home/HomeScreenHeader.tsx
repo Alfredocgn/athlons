@@ -1,30 +1,73 @@
 import { useTheme } from "@/core/hooks/useTheme";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import { router } from "expo-router";
-import React from "react";
+import { useUser } from "@/core/profile/useProfile";
+import React, { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
+
+import { router } from "expo-router";
 import CustomButton from "../CustomButton";
+import { useWeeklyCalendar } from "./hooks/useWeeklyCalendar";
+import NotificationButton from "./NotificationButton";
+import ProfileAvatar from "./ProfileAvatar";
 import ProgressBar from "./ProgressBar";
+import WeatherWidget from "./WeatherWidget";
+import WeeklyCalendar from "./WeeklyCalendar";
+import WorkoutDetailsModal from "./WorkoutDetailsModal";
 
 const HomeScreenHeader = () => {
   const theme = useTheme();
+  const { data: user, isLoading } = useUser();
+  const { weeklyData, getWorkoutForDate, markWorkoutCompleted } =
+    useWeeklyCalendar();
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const getUserGreeting = () => {
+    if (isLoading || !user) {
+      return "Welcome back!";
+    }
+    return `Welcome back, ${user.firstName || "Athlete"}`;
+  };
+
+  const handleDayPress = (date: Date) => {
+    const workout = getWorkoutForDate(date);
+    if (workout) {
+      setModalVisible(true);
+    }
+  };
+
+  const handleStartWorkout = (workoutId: string) => {
+    // Navegar a la pantalla de entrenamiento
+    router.push("/(tabs)/training");
+  };
+
+  const handleMarkCompleted = (workoutId: string) => {
+    markWorkoutCompleted(workoutId);
+    setModalVisible(false);
+  };
+
   return (
-    <View style={styles.container}>
-      {/* Header with greeting */}
-      <View style={styles.titleContainer}>
-        <View
-          style={[styles.iconContainer, { backgroundColor: theme.primaryText }]}
-        >
-          <Ionicons name="home" size={24} color={theme.background} />
+    <View style={[styles.container]}>
+      {/* Top Header Row */}
+      <View style={styles.topRow}>
+        <View style={styles.leftSection}>
+          <ProfileAvatar size={40} />
+          <NotificationButton size={24} />
         </View>
-        <View style={styles.textContainer}>
-          <Text style={[styles.greetingsText, { color: theme.primaryText }]}>
-            Welcome back, Alfredo
-          </Text>
-          <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
-            `{"Ready for today's training?"}`
-          </Text>
-        </View>
+        <WeatherWidget showDetails={false} />
+      </View>
+
+      {/* Greeting Section */}
+      <View style={styles.greetingSection}>
+        <Text style={[styles.greetingsText, { color: theme.primaryText }]}>
+          {getUserGreeting()}
+        </Text>
+        <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
+          Ready for today&apos;s training?
+        </Text>
+      </View>
+
+      {/* Weekly Calendar */}
+      <View style={styles.calendarSection}>
+        <WeeklyCalendar onDayPress={handleDayPress} size="medium" />
       </View>
 
       {/* Progress Section */}
@@ -57,12 +100,22 @@ const HomeScreenHeader = () => {
         </View>
 
         <Text style={[styles.quoteText, { color: theme.primaryText }]}>
-          {"'Luck is what happens when preparation meets opportunity'"}
+          &quot;Luck is what happens when preparation meets opportunity&quot;
         </Text>
         <Text style={[styles.quoteAuthor, { color: theme.secondaryText }]}>
           – Seneca
         </Text>
       </View>
+
+      {/* Workout Details Modal */}
+      <WorkoutDetailsModal
+        visible={modalVisible}
+        workout={weeklyData.selectedDay?.workout || null}
+        selectedDate={weeklyData.selectedDay?.date || null}
+        onClose={() => setModalVisible(false)}
+        onStartWorkout={handleStartWorkout}
+        onMarkCompleted={handleMarkCompleted}
+      />
     </View>
   );
 };
@@ -73,40 +126,31 @@ const styles = StyleSheet.create({
   container: {
     paddingTop: 20,
   },
-  titleContainer: {
+  topRow: {
     flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 20,
   },
-  iconContainer: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    justifyContent: "center",
+  leftSection: {
+    flexDirection: "row",
     alignItems: "center",
-    marginRight: 15,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
+    gap: 16,
   },
-  textContainer: {
-    flex: 1,
+  greetingSection: {
+    marginBottom: 20,
   },
   greetingsText: {
     fontSize: 24,
-    fontFamily: "Roman",
     fontWeight: "600",
     marginBottom: 4,
   },
   subtitle: {
     fontSize: 16,
-    fontFamily: "Roman",
     opacity: 0.8,
+  },
+  calendarSection: {
+    marginBottom: 20,
   },
   progressCard: {
     borderRadius: 12,
@@ -122,7 +166,6 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   progressTitle: {
-    fontFamily: "Roman",
     fontSize: 18,
     fontWeight: "600",
     marginBottom: 15,
@@ -146,9 +189,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   wisdomTitle: {
-    fontFamily: "Roman",
     fontSize: 18,
-    fontWeight: "600",
   },
   wisdomButton: {
     borderRadius: 8,
@@ -156,20 +197,16 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
   },
   wisdomButtonText: {
-    fontFamily: "Roman",
     fontSize: 12,
-    fontWeight: "500",
   },
   quoteText: {
     fontSize: 16,
-    fontFamily: "Roman",
     fontStyle: "italic",
     marginBottom: 8,
     lineHeight: 22,
   },
   quoteAuthor: {
     fontSize: 14,
-    fontFamily: "Roman",
     fontStyle: "italic",
     textAlign: "right",
   },

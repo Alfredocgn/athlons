@@ -6,11 +6,13 @@ import { useWorkoutSession } from "@/core/workouts/hooks/useWorkoutSession";
 import { router } from "expo-router";
 
 import React from "react";
-import { SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const HomeScreen = () => {
   const theme = useTheme();
   const { sessions } = useWorkoutSession();
+
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: theme.background }]}
@@ -75,9 +77,8 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
   sectionTitle: {
-    fontFamily: "Roman",
+    fontFamily: "Yantramanav_Regular",
     fontSize: 20,
-    fontWeight: "600",
     marginBottom: 15,
   },
   card: {
@@ -93,13 +94,13 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   cardTitle: {
-    fontFamily: "Roman",
+    fontFamily: "Yantramanav_Regular",
     fontSize: 18,
-    fontWeight: "600",
+
     marginBottom: 8,
   },
   cardSubtitle: {
-    fontFamily: "Roman",
+    fontFamily: "Yantramanav_Regular",
     fontSize: 14,
     marginBottom: 20,
     opacity: 0.8,
@@ -116,8 +117,8 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   startButtonText: {
-    fontFamily: "Roman",
-    fontWeight: "600",
+    fontFamily: "Yantramanav_Regular",
+
     fontSize: 16,
   },
 });

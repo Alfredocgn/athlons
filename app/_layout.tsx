@@ -15,6 +15,12 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     Roman: require("../assets/fonts/Roman.ttf"),
+    Yantramanav_Black: require("../assets/fonts/Yantramanav-Black.ttf"),
+    Yantramanav_Bold: require("../assets/fonts/Yantramanav-Bold.ttf"),
+    Yantramanav_Medium: require("../assets/fonts/Yantramanav-Medium.ttf"),
+    Yantramanav_Regular: require("../assets/fonts/Yantramanav-Regular.ttf"),
+    Yantramanav_Light: require("../assets/fonts/Yantramanav-Light.ttf"),
+    Yantramanav_Thin: require("../assets/fonts/Yantramanav-Thin.ttf"),
   });
 
   if (!loaded) {

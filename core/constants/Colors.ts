@@ -3,8 +3,8 @@
  * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
  */
 
-// const tintColorLight = "#CBA144";
-// const tintColorDark = "#F5F2EB";
+const tintColorLight = "#CBA144";
+const tintColorDark = "#F5F2EB";
 
 // export const Colors = {
 //   light: {
@@ -39,8 +39,8 @@
 //   },
 // };
 
-const tintColorLight = "#C7A34C"; // Olympic gold
-const tintColorDark = "#F5F5F5"; // Marble
+// const tintColorLight = "#C7A34C"; // Olympic gold
+// const tintColorDark = "#F5F5F5"; // Marble
 
 export const Colors = {
   light: {
