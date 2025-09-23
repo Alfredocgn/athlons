@@ -19,7 +19,7 @@ export function ThemedText({
   return (
     <Text
       style={[
-        { color },
+        { color, fontFamily: "Yantramanav_Regular" },
         type === "default" ? styles.default : undefined,
         type === "title" ? styles.title : undefined,
         type === "defaultSemiBold" ? styles.defaultSemiBold : undefined,
@@ -36,24 +36,26 @@ const styles = StyleSheet.create({
   default: {
     fontSize: 16,
     lineHeight: 24,
+    fontFamily: "Yantramanav_Regular",
   },
   defaultSemiBold: {
     fontSize: 16,
     lineHeight: 24,
-    fontWeight: "600",
+    fontFamily: "Yantramanav_Bold",
   },
   title: {
     fontSize: 32,
-    fontWeight: "bold",
     lineHeight: 32,
+    fontFamily: "Yantramanav_Bold",
   },
   subtitle: {
     fontSize: 20,
-    fontWeight: "bold",
+    fontFamily: "Yantramanav_Bold",
   },
   link: {
     lineHeight: 30,
     fontSize: 16,
     color: "#0a7ea4",
+    fontFamily: "Yantramanav_Regular",
   },
 });
