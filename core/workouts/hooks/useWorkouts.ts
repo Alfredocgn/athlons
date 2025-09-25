@@ -61,6 +61,11 @@ export const useGetWorkout = (workoutId: string) => {
   return useQuery({
     queryKey: ["workout", workoutId],
     queryFn: async () => {
+      // Validar que workoutId sea válido antes de hacer la query
+      if (!workoutId || workoutId.trim() === "") {
+        throw new Error("Workout ID is required");
+      }
+
       const response = await apiClient.post("", {
         query: print(GET_WORKOUT_SESSION),
         variables: { id: workoutId },
@@ -72,5 +77,8 @@ export const useGetWorkout = (workoutId: string) => {
       }
       return response.data.data.workoutSession || null;
     },
+    enabled: !!workoutId && workoutId.trim() !== "", // Solo ejecutar si tenemos un ID válido
+    staleTime: 5 * 60 * 1000,
+    retry: 2,
   });
 };

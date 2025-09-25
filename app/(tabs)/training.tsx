@@ -1,7 +1,8 @@
 import ActionButton from "@/core/components/training/ActionButton";
+import EnhancedWorkoutTracker from "@/core/components/training/EnhacedWorkoutTracker";
 import TrainingHeader from "@/core/components/training/TrainingHeader";
 import WorkoutHistory from "@/core/components/training/WorkoutHistory";
-import WorkoutTracker from "@/core/components/training/WorkoutTracker";
+
 import { useLocationPermission } from "@/core/hooks/useLocationPermission";
 import { useLocationTracking } from "@/core/hooks/useLocationTracking";
 import { useTheme } from "@/core/hooks/useTheme";
@@ -15,14 +16,8 @@ import {
 import { useWorkoutSession } from "@/core/workouts/hooks/useWorkoutSession";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
-import {
-  Alert,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const TrainingScreen = () => {
   const theme = useTheme();
@@ -47,6 +42,7 @@ const TrainingScreen = () => {
   );
 
   const [isTracking, setIsTracking] = useState(false);
+
   useEffect(() => {
     if (!permission.granted) {
       requestPermission();
@@ -62,12 +58,14 @@ const TrainingScreen = () => {
       );
       return;
     }
-    startSession("Race", WorkoutType.RUN);
+    startSession("Morning Run", WorkoutType.RUN);
     setIsTracking(true);
   };
+
   const handlePauseWorkout = () => {
     pauseSession();
   };
+
   const handleResumeWorkout = () => {
     resumeSession();
   };
@@ -89,10 +87,22 @@ const TrainingScreen = () => {
         )}\nDistance: ${formatDistance(stats.distance)}\nPace: ${formatPace(
           stats.pace
         )}\nCalories: ${stats.caloriesBurned}`,
-        [{ text: "OK" }]
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              // Usar localId en lugar de id para LocalWorkoutSession
+              router.push({
+                pathname: "/workouts/workout-details",
+                params: { sessionId: currentSession.localId },
+              } as any);
+            },
+          },
+        ]
       );
     }
   };
+
   const handleCancelWorkout = () => {
     Alert.alert(
       "Cancel Training",
@@ -112,12 +122,12 @@ const TrainingScreen = () => {
   };
 
   const handleSessionPress = (session: any) => {
+    // Las sesiones de backend tienen 'id', no 'localId'
     router.push({
       pathname: "/workouts/workout-details",
       params: { sessionId: session.id },
     } as any);
   };
-
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: theme.background }]}
@@ -138,8 +148,55 @@ const TrainingScreen = () => {
               <Text
                 style={[styles.sectionSubtitle, { color: theme.secondaryText }]}
               >
-                Track your runs and improve your performance
+                Track your runs with advanced metrics and sensor data
               </Text>
+
+              {/* Información sobre sensores */}
+              <View
+                style={[
+                  styles.sensorInfo,
+                  { backgroundColor: theme.primaryText + "10" },
+                ]}
+              >
+                <Text
+                  style={[styles.sensorInfoTitle, { color: theme.primaryText }]}
+                >
+                  Advanced Tracking Available
+                </Text>
+                <Text
+                  style={[
+                    styles.sensorInfoText,
+                    { color: theme.secondaryText },
+                  ]}
+                >
+                  • Step detection and cadence
+                </Text>
+                <Text
+                  style={[
+                    styles.sensorInfoText,
+                    { color: theme.secondaryText },
+                  ]}
+                >
+                  • Running form analysis
+                </Text>
+                <Text
+                  style={[
+                    styles.sensorInfoText,
+                    { color: theme.secondaryText },
+                  ]}
+                >
+                  • Vertical oscillation and power
+                </Text>
+                <Text
+                  style={[
+                    styles.sensorInfoText,
+                    { color: theme.secondaryText },
+                  ]}
+                >
+                  • Real-time efficiency metrics
+                </Text>
+              </View>
+
               <ActionButton
                 icon="play"
                 title="Start Training"
@@ -147,10 +204,11 @@ const TrainingScreen = () => {
                 variant="primary"
                 size="large"
               />
+
               <View style={styles.permissionStatus}>
                 {permission.granted ? (
-                  <Text style={[styles.statusText, { color: theme.text }]}>
-                    ✓ Ready to track your race
+                  <Text style={[styles.statusText, { color: theme.success }]}>
+                    ✓ Ready to track with sensors
                   </Text>
                 ) : (
                   <Text style={[styles.statusText, { color: theme.error }]}>
@@ -163,10 +221,7 @@ const TrainingScreen = () => {
         ) : (
           <View style={styles.trackingSection}>
             <View style={[styles.card, { backgroundColor: "white" }]}>
-              <Text style={[styles.sectionTitle, { color: theme.primaryText }]}>
-                Active Training
-              </Text>
-              <WorkoutTracker
+              <EnhancedWorkoutTracker
                 stats={stats}
                 onPause={handlePauseWorkout}
                 onResume={handleResumeWorkout}
@@ -238,6 +293,23 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginBottom: 20,
     opacity: 0.8,
+    textAlign: "center",
+  },
+  sensorInfo: {
+    padding: 16,
+    borderRadius: 8,
+    marginBottom: 20,
+    width: "100%",
+  },
+  sensorInfoTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 8,
+    textAlign: "center",
+  },
+  sensorInfoText: {
+    fontSize: 12,
+    marginBottom: 4,
   },
   permissionStatus: {
     marginTop: 15,
@@ -247,6 +319,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: "center",
     fontFamily: "Roman",
+    fontWeight: "500",
   },
 });
 
