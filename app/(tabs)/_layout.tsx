@@ -40,14 +40,6 @@ export default function TabLayout() {
             title: "Training",
           }}
         />
-
-        <Tabs.Screen
-          name="profile"
-          options={{
-            title: "Profile",
-            tabBarBadge: 1,
-          }}
-        />
       </Tabs>
     </SafeAreaView>
   );
