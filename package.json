@@ -1,0 +1,18 @@
+{
+  "name": "athlons",
+  "private": true,
+  "packageManager": "pnpm@10.33.2",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "dev": "turbo run dev"
+  },
+  "devDependencies": {
+    "turbo": "^2.9.6"
+  }
+}
