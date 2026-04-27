@@ -1,0 +1,292 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum Pace {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  ELITE
+}
+
+enum ClubRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum WorkoutType {
+  RUN
+  INTERVAL
+  LONG_RUN
+  RECOVERY
+  RACE
+  TEMPO
+  TRAIL
+}
+
+enum DeviceType {
+  GARMIN
+  SUUNTO
+  POLAR
+  STRAVA
+  APPLE_HEALTH
+  GOOGLE_FIT
+  FITBIT
+  COROS
+  OTHER
+}
+
+model AuthUser {
+  id            String      @id @default(uuid())
+  email         String      @unique
+  password      String? 
+  provider      String?
+  providerId    String?
+  isVerified    Boolean     @default(false)
+  user          User?   
+  refreshTokens RefreshToken[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model User {
+  id                  String      @id @default(uuid())
+  firstName          String
+  lastName           String
+  birthDate           DateTime?
+  gender              Gender?
+  pace                Pace?
+  bio                 String?
+  profileImg          String?
+  height              Float?
+  weight              Float?
+  preferredDistance   Float?
+  weeklyGoal          Float?
+  socialLinks         Json?
+  enableEmailNotifications    Boolean @default(true)
+  enablePushNotifications     Boolean @default(true)
+  authUser            AuthUser    @relation(fields:[id],references:[id])
+  createdRuns         Run[]
+  createdClubs        Club[]       
+  joinedRuns          RunnerOnRun[]
+  clubMemberships     ClubMembers[] 
+  createdRoutes       Route[]
+  workoutSessions     WorkoutSession[]
+  createdPlans        TrainingPlan[]
+  subscribedPlans     UserTrainingPlan[]
+  externalConnections   ExternalServiceConnection[]
+  importedWorkouts      ImportedWorkout[]
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime  @updatedAt
+}
+
+model Run {
+  id            String      @id @default(uuid())
+  title         String  
+  description   String?
+  date          DateTime
+  location      String  
+  latitude      Float?
+  longitude     Float?
+  distance      Float?
+  eventImage    String?
+  pace          Pace?
+  creatorId     String
+  creator       User        @relation(fields:[creatorId],references:[id])
+  participants  RunnerOnRun[]
+  workoutSessions WorkoutSession[]
+  routeId       String?
+  route         Route?      @relation(fields:[routeId],references:[id])
+  routeData     String?
+  clubId        String?
+  club          Club?       @relation(fields:[clubId],references: [id])
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model RunnerOnRun {
+  id            String   @id @default(uuid())
+  userId        String
+  runId         String
+  user          User     @relation(fields:[userId],references:[id])
+  run           Run      @relation(fields:[runId],references:[id])
+
+}
+
+model Club {
+  id            String   @id @default(uuid())
+  name          String    
+  location      String
+  latitude      Float?
+  longitude     Float?
+  clubLogo      String?
+  coverImage    String?
+  description   String?
+  ownerId       String
+  owner         User     @relation(fields:[ownerId],references: [id])
+  members       ClubMembers[]   
+  events        Run[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime  @updatedAt
+
+}
+
+model ClubMembers {
+  id            String @id @default(uuid())
+  userId        String
+  clubId        String
+  role          ClubRole
+  user          User @relation(fields:[userId],references: [id])
+  club          Club @relation(fields:[clubId],references: [id])
+  joinedAt      DateTime @default(now())
+}
+
+model Route{
+  id            String  @id @default(uuid())
+  name          String
+  description   String
+  routeData     String
+  distance      Float
+  elevation     Float?
+  creatorId     String
+  creator       User      @relation(fields:[creatorId],references:[id])
+  runs          Run[]    
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+}
+
+model WorkoutSession {
+  id              String  @id @default(uuid())
+  title           String
+  date            DateTime
+  duration        Int 
+  distance        Float
+  caloriesBurned  Int?
+  avgPace         Float?
+  routeData       String?
+  notes           String?
+  userId          String
+  user            User @relation(fields:[userId],references: [id])
+  workoutType     WorkoutType
+  trackPoints     TrackPoint[]
+  importSource    ImportedWorkout?
+  importedFrom    DeviceType?
+  runId           String?
+  run             Run? @relation(fields:[runId],references: [id])
+  externalId      String?
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+}
+
+model TrackPoint {
+  id                String  @id  @default(uuid())
+  latitude          Float
+  longitude         Float
+  elevation         Float?
+  heartRate         Int?
+  timestamp         DateTime
+  workoutSessionId  String
+  workoutSession    WorkoutSession @relation(fields: [workoutSessionId],references: [id])
+}
+
+model TrainingPlan {
+  id            String    @id @default(uuid())
+  name          String
+  description   String?
+  duration      Int       // En semanas
+  difficulty    Pace      // Reutilizamos el enum Pace
+  creatorId     String
+  creator       User      @relation(fields: [creatorId], references: [id])
+  workouts      PlannedWorkout[]
+  subscribers   UserTrainingPlan[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model PlannedWorkout {
+  id             String    @id @default(uuid())
+  title          String
+  description    String?
+  dayNumber      Int      
+  workoutType    WorkoutType
+  duration       Int?     
+  distance       Float?    
+  trainingPlanId String
+  trainingPlan   TrainingPlan @relation(fields: [trainingPlanId], references: [id], onDelete: Cascade)
+}
+
+model UserTrainingPlan {
+  id             String    @id @default(uuid())
+  userId         String
+  trainingPlanId String
+  startDate      DateTime
+  currentDay     Int       @default(1)
+  isCompleted    Boolean   @default(false)
+  user           User      @relation(fields: [userId], references: [id])
+  trainingPlan   TrainingPlan @relation(fields: [trainingPlanId], references: [id])
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model ExternalServiceConnection {
+  id              String     @id @default(uuid())
+  userId          String
+  user            User       @relation(fields: [userId], references: [id])
+  serviceType     DeviceType
+  accessToken     String     
+  refreshToken    String?   
+  tokenExpiry     DateTime?  
+  lastSyncAt      DateTime? 
+  serviceUserId   String?    
+  isActive        Boolean    @default(true)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+}
+
+model ImportedWorkout {
+  id              String     @id @default(uuid())
+  userId          String
+  user            User       @relation(fields: [userId], references: [id])
+  externalId      String   
+  serviceType     DeviceType
+  importedAt      DateTime   @default(now())
+  workoutSession  WorkoutSession? @relation(fields: [workoutSessionId], references: [id])
+  workoutSessionId String?   @unique
+  rawData         String     
+  processed       Boolean    @default(false)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  @@unique([userId, externalId, serviceType]) // Evita importaciones duplicadas
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  expiresAt DateTime
+  isRevoked Boolean  @default(false) 
+  userId    String
+  authUser  AuthUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
