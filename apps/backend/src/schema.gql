@@ -1,0 +1,395 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type AccessTokenResponse {
+  accessToken: String!
+}
+
+type AuthResponse {
+  accessToken: String!
+  refreshToken: String!
+  user: User!
+}
+
+input CreateRouteInput {
+  description: String!
+  distance: Float!
+  elevation: Float
+  name: String!
+  routeData: String!
+}
+
+input CreateRunInput {
+  clubId: String
+  date: String!
+  description: String
+  distance: Float
+  eventImage: String
+  latitude: Float
+  location: String!
+  longitude: Float
+  pace: Pace
+  routeData: String
+  routeId: String
+  title: String!
+}
+
+input CreateTrackPointInput {
+  elevation: Float
+  heartRate: Int
+  latitude: Float!
+  longitude: Float!
+  timestamp: DateTime!
+}
+
+input CreateUserInput {
+  bio: String
+  birthDate: DateTime
+  enableEmailNotifications: Boolean = true
+  enablePushNotifications: Boolean = true
+  firstName: String!
+  gender: Gender
+  height: Float
+  lastName: String!
+  pace: Pace
+  preferredDistance: Float
+  profileImg: String
+  socialLinks: JSON
+  weeklyGoal: Float
+  weight: Float
+}
+
+input CreateWorkoutSessionInput {
+  avgPace: Float
+  caloriesBurned: Int
+  date: DateTime!
+  distance: Float!
+  duration: Int!
+  externalId: String
+  importedFrom: DeviceType!
+  notes: String
+  routeData: String
+  runId: String
+  title: String!
+  trackPoints: [CreateTrackPointInput!]
+  workoutType: WorkoutType!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+enum DeviceType {
+  APPLE_HEALTH
+  COROS
+  FITBIT
+  GARMIN
+  GOOGLE_FIT
+  OTHER
+  POLAR
+  STRAVA
+  SUUNTO
+}
+
+enum Gender {
+  FEMALE
+  MALE
+  OTHER
+}
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+type Mutation {
+  assignToRun(runId: String!, workoutSessionId: String!): WorkoutSession!
+  cancelRegistration(id: String!): Run!
+  createRoute(createRouteInput: CreateRouteInput!): Route!
+  createRun(createRunInput: CreateRunInput!): Run!
+  createUser(createUserInput: CreateUserInput!): User!
+  createWorkoutSession(createWorkoutSessionInput: CreateWorkoutSessionInput!): WorkoutSession!
+  forgotPassword(email: String!): Boolean!
+  login(input: LoginInput!): AuthResponse!
+  logout(refreshToken: String!): Boolean!
+  refreshToken(refreshToken: String!): AccessTokenResponse!
+  register(input: RegisterInput!): AuthResponse!
+  registerForRun(id: String!): Run!
+  removeRoute(id: ID!): Route!
+  removeRun(id: String!): Run!
+  removeUser(id: ID!): User!
+  removeWorkoutSession(id: ID!): WorkoutSession!
+  updateProfile(updateProfileInput: UpdateProfileInput!): User!
+  updateRoute(updateRouteInput: UpdateRouteInput!): Route!
+  updateRun(updateRunInput: UpdateRunInput!): Run!
+  updateUser(updateUserInput: UpdateUserInput!): User!
+  updateWorkoutSession(updateWorkoutSessionInput: UpdateWorkoutSessionInput!): WorkoutSession!
+}
+
+enum Pace {
+  ADVANCED
+  BEGINNER
+  ELITE
+  INTERMEDIATE
+}
+
+type Query {
+  getWorkoutStats(endDate: DateTime!, startDate: DateTime!): WorkoutSessionStats!
+  me: User!
+  myProfile: User!
+  myRuns: [Run!]!
+  route(id: ID!): Route!
+  routes(filters: RouteDataFilters): [Route!]!
+  run(id: String!): Run!
+  runs(filters: RunFilters): [Run!]!
+  sessionsByRun(runId: String!): [WorkoutSession!]!
+  upcomingRuns: [Run!]!
+  user(id: ID!): User!
+  users: [User!]!
+  workoutSession(id: ID!): WorkoutSession!
+  workoutSessions(filters: WorkoutSessionFilters): [WorkoutSession!]!
+}
+
+input RegisterInput {
+  email: String!
+  firstName: String!
+  lastName: String!
+  password: String!
+}
+
+type Route {
+  createdAt: DateTime!
+  creator: User!
+  creatorId: String!
+  description: String!
+  distance: Float!
+  elevation: Float
+  id: ID!
+  name: String!
+  routeData: String!
+  routeDataJson: JSON
+  runs: [Run!]
+  updatedAt: DateTime!
+}
+
+input RouteDataFilters {
+  createdAfter: DateTime
+  createdBefore: DateTime
+  creatorId: String
+  limit: Int
+  maxDistance: Float
+  maxElevation: Float
+  minDistance: Float
+  minElevation: Float
+  nearLatitude: Float
+  nearLongitude: Float
+  offset: Int
+  radiusKm: Float
+}
+
+type Run {
+  clubdId: String
+  createdAt: DateTime!
+  creator: User!
+  creatorId: String!
+  date: DateTime!
+  description: String
+  distance: Float
+  eventImage: String
+  id: ID!
+  latitude: Float
+  location: String!
+  longitude: Float
+  pace: Pace
+  participantCount: Int!
+  participants: [RunnerOnRun!]
+  route: Route
+  routeData: String
+  routeId: String
+  title: String!
+  updatedAt: DateTime!
+  workoutSessions: [WorkoutSession!]
+}
+
+input RunFilters {
+  clubId: String
+  creatorId: String
+  fromDate: String
+  location: String
+  maxDistance: Float
+  minDistance: Float
+  pace: Pace
+  search: String
+  toDate: String
+}
+
+type RunnerOnRun {
+  id: ID!
+  run: Run!
+  runId: String!
+  user: User!
+  userId: String!
+}
+
+type TrackPoint {
+  elevation: Float
+  heartRate: Int
+  id: ID!
+  latitude: Float!
+  longitude: Float!
+  timestamp: DateTime!
+  workoutSession: WorkoutSession!
+  workoutSessionId: String!
+}
+
+input UpdateProfileInput {
+  bio: String
+  birthDate: DateTime
+  enableEmailNotifications: Boolean
+  enablePushNotifications: Boolean
+  firstName: String
+  gender: Gender
+  height: Float
+  id: ID!
+  lastName: String
+  pace: Pace
+  preferredDistance: Float
+  profileImg: String
+  socialLinks: JSON
+  weeklyGoal: Float
+  weight: Float
+}
+
+input UpdateRouteInput {
+  description: String
+  distance: Float
+  elevation: Float
+  id: ID!
+  name: String
+  routeData: String
+}
+
+input UpdateRunInput {
+  clubId: String
+  date: String
+  description: String
+  distance: Float
+  eventImage: String
+  id: ID!
+  latitude: Float
+  location: String
+  longitude: Float
+  pace: Pace
+  routeData: String
+  routeId: String
+  title: String
+}
+
+input UpdateUserInput {
+  bio: String
+  birthDate: DateTime
+  enableEmailNotifications: Boolean = true
+  enablePushNotifications: Boolean = true
+  firstName: String
+  gender: Gender
+  height: Float
+  id: ID!
+  lastName: String
+  pace: Pace
+  preferredDistance: Float
+  profileImg: String
+  socialLinks: JSON
+  weeklyGoal: Float
+  weight: Float
+}
+
+input UpdateWorkoutSessionInput {
+  avgPace: Float
+  caloriesBurned: Int
+  date: DateTime
+  distance: Float
+  duration: Int
+  externalId: String
+  id: ID!
+  importedFrom: DeviceType
+  notes: String
+  routeData: String
+  runId: String
+  title: String
+  trackPoints: [CreateTrackPointInput!]
+  workoutType: WorkoutType
+}
+
+type User {
+  bio: String
+  birthDate: Float
+  createdAt: DateTime!
+  email: String
+  enableEmailNotifications: Boolean!
+  enablePushNotifications: Boolean!
+  firstName: String!
+  gender: Gender
+  height: Float
+  id: ID!
+  lastName: String!
+  pace: Pace
+  preferredDistance: Float
+  profileImg: String
+  socialLinks: JSON
+  updatedAt: DateTime!
+  weeklyGoal: Float
+  weight: Float
+}
+
+type WorkoutSession {
+  avgPace: Float
+  caloriesBurned: Int
+  createdAt: DateTime!
+  date: DateTime!
+  distance: Float!
+  duration: Int!
+  externalId: String
+  id: ID!
+  importedFrom: DeviceType
+  notes: String
+  routeData: String
+  run: Run
+  runId: String
+  title: String!
+  trackPoints: [TrackPoint!]
+  updatedAt: DateTime!
+  user: User!
+  userId: String!
+  workoutType: WorkoutType!
+}
+
+input WorkoutSessionFilters {
+  endDate: DateTime
+  startDate: DateTime
+  workoutType: WorkoutType
+}
+
+type WorkoutSessionStats {
+  avgPace: Float!
+  totalDistance: Float!
+  totalDuration: Int!
+  weeklyGoalProgress: Float
+  workoutCount: Int!
+}
+
+enum WorkoutType {
+  INTERVAL
+  LONG_RUN
+  RACE
+  RECOVERY
+  RUN
+  TEMPO
+  TRAIL
+}
